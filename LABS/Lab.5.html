@@ -19,10 +19,14 @@
 
 
 
+
+
       5 Details for MPCS 51205<br>
     </font>
     <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Each
 lab
+
+
 
 
 
@@ -51,10 +55,14 @@ the
 
 
 
+
+
         syllabus for information on grading.&nbsp; Turning in lab
         assignments on time is required, without exception, and <span
           style="font-style: italic;">all late deliveries will be
           penalized</span>, <span style="font-style: italic;">regardless
+
+
 
 
 
@@ -67,6 +75,8 @@ the
         syllabus page.</font> </p>
     <p style="font-family: Times New Roman,Times,serif;"><font size="-1">You
 may
+
+
 
 
 
@@ -141,6 +151,8 @@ this
 
 
 
+
+
         fifth lab, we are going to code a little microservice that will
         accept a synchronous call over RMI to a server with a backing
         PostgresSQL database.&nbsp; That RMI Server will obtain data
@@ -151,6 +163,8 @@ this
       </font></p>
     <p style="font-family: Times New Roman,Times,serif;"><font size="-1">First,
 make
+
+
 
 
 
@@ -178,8 +192,9 @@ make
           style="font-style: italic;">make sure you understand</span>
         the meaning and significance of -p 8080:8080):<br>
         <br>
-        docker run -dit -p 8080:8080 --name Lab5HttpdServer
-        tomcat:9.0.27-jdk8-openjdk<br>
+        <font color="#000099">docker run -di --hostname httpdserver
+          --name Lab5HttpdServer -p 8080:8080
+          tomcat:10.1-jdk17-temurin-noble</font><br>
         <br>
         Once you have that container down (and running), obtain a bash
         shell in that container by running docker exec into the
@@ -190,25 +205,32 @@ make
         JDK, and net-tools, which will allow you to run network-related
         utilities including ifconfig.<br>
         <br>
-        apt-get update<br>
-        apt-get install -y vim<br>
-        apt-get install -y default-jdk <br>
-        apt-get install -y net-tools<br>
-        apt-get install -y openssh-client<br>
+        <font color="#000099">apt-get update<br>
+          apt-get install -y vim<br>
+          apt-get install -y net-tools<br>
+          apt-get install -y openssh-client</font><br>
         <br>
-        Create a subdirectory called "/src/lab5/RMI".&nbsp; Next,
-        download ~mark/pub/51205/src.labs/RMI.tgz and copy it into your
-        container and untar the contents into your RMI
-        subdirectory.&nbsp; You could also scp it from the Linux cluster
-        directly into your container as well.&nbsp; Cat the README file
-        and compile the java client and server.&nbsp; Then execute the
-        server and in a new terminal window execute the client, to make
-        sure everything is running.&nbsp; Refer again to the README file
-        on how to run the client and server.&nbsp;&nbsp; You can just
-        use "localhost" for the &lt;server host address&gt; on the
-        client command line.<br>
+        Create a subdirectory called "/src/lab5" and cd into that
+        directory.&nbsp; <br>
         <br>
-        This container will server as your "CLIENT" container for the
+        Now, get RMI.tgz down into your container.&nbsp; You can
+        retrieve this file on Canvas under (use docker cp to copy it
+        into your container):<br>
+        <br>
+        /Files/LABS/Lab.5/RMI.tgz<br>
+        <br>
+        Now unzip that file and docker cp the tarball into the /src/lab5
+        directory of your container and untar the contents.&nbsp; You
+        should have a new RMI subdirectory under /src/lab5.<br>
+      </span></small><small><span style="font-family: Times New
+        Roman,Times,serif;"><strike><br>
+        </strike><strike> </strike>Now, cd into /src/lab5/RMI<br>
+        <br>
+        Cat the README file and compile the java client and server
+        (ignore any warnings or notes).&nbsp; Refer again to the README
+        file on how to run the client and server.&nbsp;&nbsp; <br>
+        <br>
+        This container will serve as your "CLIENT" container for the
         synchronous exercise of this lab.&nbsp; Don't be confused by the
         name of this container.&nbsp; Although it is the httpd server
         and is named </span></small><small><span style="font-family:
@@ -227,48 +249,42 @@ make
           <br>
         </small></span></span><small><span style="font-family: Times New
         Roman,Times,serif;">Next, in a separate terminal window get down
-        a PostgresSQL version 10.10 container by running this command:<br>
+        a PostgresSQL version 15.19 container by running this command:<br>
         <br>
-        docker run --name Lab5PostgresServer -e
-        POSTGRES_PASSWORD=mysecret -p 3306:3306 -p 5432:5432 -d
-        postgres:10.10<br>
+        <font color="#000099">docker run --name Lab5PostgresServer
+          --hostname postgres -e POSTGRES_PASSWORD=mysecret -e
+          POSTGRES_HOST_AUTH_METHOD=password -p 5432:5432 -d
+          postgres:15.19</font><br>
         <br>
         Docker exec a bash shell into your new PostgresSQL server and
         poke around a bit.&nbsp; Run the following updates in your
         Postgres_server:<br>
         <br>
       </span></small><small><span style="font-family: Times New
-        Roman,Times,serif;"> apt-get update<br>
-        apt-get install -y vim<br>
-        apt-get install -y openjdk-8-jdk<br>
-        apt-get install -y net-tools<br>
-        apt-get install -y openssh-client<br>
-        apt-get install -y unzip<br>
+        Roman,Times,serif;"><font color="#000099"> apt-get update<br>
+          apt-get install -y vim<br>
+          apt-get install -y default-jdk<br>
+          apt-get install -y net-tools<br>
+          apt-get install -y openssh-client<br>
+          apt-get install -y unzip</font><br>
+        <br>
+        Now, get the postgres dvdrental database down into your
+        container.&nbsp; You can retrieve this file on Canvas under:<br>
+        <br>
+        /Files/LABS/Lab.5/dvdrental.zip<br>
+        <br>
+        Now unzip that file and docker cp the tarball into the root
+        directory of your container.<br>
+        <br>
       </span></small><small><span style="font-family: Times New
-        Roman,Times,serif;"> <br>
-        Go here:
-        http://www.postgresqltutorial.com/postgresql-sample-database/</span></small><small><span
-        style="font-family: Times New Roman,Times,serif;"> and click on
-        the red "Download DVD Rental Sample Database" button and follow
-        the instructions to download and load your Postgres instance
-        with the sample employees database.&nbsp; You may find that
-        obtaining the dvdrental.tar file onto your host system, and then
-        using docker cp to copy it into your container will be
-        easiest.&nbsp; You may also find it easier to obtain the tarball
-        of this sample database off my pub directory </span></small><small><span
-        style="font-family: Times New Roman,Times,serif;">~mark/pub/51205/src.labs/dvdrental.tar</span></small><small><span
-        style="font-family: Times New Roman,Times,serif;">.&nbsp; It's
-        contents are identical to the zip file referred to on the
-        www.postgresqltutorial.com website above.&nbsp;&nbsp; Once
-        you've retrieved the sample DVD rental database file, run the
-        following instructions&nbsp; to install the sample database into
-        your Postgres container:<br>
+        Roman,Times,serif;">Once you've retrieved the sample DVD rental
+        database file and have copied it into your container, run the
+        following instructions to install the sample database into your
+        Postgres container:<br>
         <br>
-        1:&nbsp; Get into a postgres shell:&nbsp; <br>
+        1:&nbsp; Get into a postgres shell (from /):&nbsp; <br>
         <br>
-        <tt>&nbsp;&nbsp;&nbsp; docker exec -it Lab5PostgresServer
-          /bin/bash</tt><tt><br>
-        </tt><tt>&nbsp;&nbsp;&nbsp; psql --username postgres</tt><tt><br>
+        <tt>&nbsp;&nbsp;&nbsp; psql --username postgres</tt><tt><br>
         </tt><br>
         2:&nbsp; At the postgres shell prompt (<b>postgres=#</b>),
         create a new database called dvdrental and then exit out of your
@@ -277,19 +293,27 @@ make
         <tt>&nbsp;&nbsp;&nbsp; </tt></span></small><small><span
         style="font-family: Times New Roman,Times,serif;"><tt><small><span
               style="font-family: Times New Roman,Times,serif;"><tt><br>
-                &nbsp;&nbsp;&nbsp; <b>dvdrental=# </b>create database
-                dvdrental;&nbsp; //this will <b>create</b> the
-                dvdrental database:&nbsp; DO NOT FORGET the terminating
-                ';' !<br>
-                &nbsp;&nbsp;&nbsp; <b>dvdrental=# </b>\q<br>
-              </tt></span></small></tt><br>
+                &nbsp;&nbsp;&nbsp; </tt></span></small></tt></span></small><font
+      size="-1"><span style="font-family: Times New Roman,Times,serif;"><tt><span
+            style="font-family: Times New Roman,Times,serif;"><tt><b>dvdrental=#
+
+              </b><font color="#000099"><b>create database
+                  dvdrental;&nbsp; //this will </b><b>create</b><b> the
+                  dvdrental database<br>
+                  &nbsp;&nbsp;&nbsp; <font color="#006600">CREATE
+                    DATABASE</font><br>
+                </b></font> &nbsp;&nbsp;&nbsp; <b>dvdrental=# </b><font
+                color="#000099">\q</font><br>
+            </tt></span></tt></span></font><small><span
+        style="font-family: Times New Roman,Times,serif;"><br>
         3:&nbsp; Now run gp_restore to load the dvdrental.tar SQL
         commands to create the set of tables in your dvdrental database
         you just created.&nbsp; From your container's prompt, run:<br>
-        <br>
-        <tt>&nbsp;&nbsp;&nbsp; pg_restore -U postgres -d dvdrental
-          ./dvdrental.tar</tt><tt><br>
-        </tt><br>
+        <tt><br>
+          &nbsp;&nbsp;&nbsp; <b><font color="#000099"><font
+                color="#000000">root@postgres:/#</font> pg_restore -U
+              postgres -d dvdrental /dvdrental.tar</font></b><br>
+        </tt><tt> </tt><br>
         You should see no output and no errors.&nbsp; At this point, you
         can hop back into your postgres shell and take a look at the new
         tables you've created (it will match the logical diagram of the
@@ -297,57 +321,52 @@ make
 href="http://www.postgresqltutorial.com/wp-content/uploads/2018/03/printable-postgresql-sample-database-diagram.pdf">http://www.postgresqltutorial.com/wp-content/uploads/2018/03/printable-postgresql-sample-database-diagram.pdf</a>):<br>
         <br>
       </span></small><font size="-1"><span style="font-family: Times New
-        Roman,Times,serif;"><tt>psql --username postgres&nbsp;&nbsp;
-          //this command from the container prompt will put you back in
-          the PostgresSQL shell</tt><tt><br>
+        Roman,Times,serif;"></span><span style="font-family: Times New
+        Roman,Times,serif;"><tt><b><font color="#000099"><font
+                color="#000000">root@postgres:/# </font>psql --username
+              postgres</font></b>&nbsp;&nbsp; //this command from the
+          container prompt will put you back in the PostgresSQL shell</tt><tt><br>
         </tt></span><span style="font-family: Times New
         Roman,Times,serif;"><tt><b><span style="font-family: Times New
-              Roman,Times,serif;">dvdrental=# </span></b>\c
-          dvdrental;&nbsp;&nbsp;&nbsp;&nbsp; //this will <b>change</b>
-          to the dvdrental database</tt><tt><br>
+              Roman,Times,serif;">dvdrental=# </span><font
+              color="#000099">\c dvdrental;</font></b>&nbsp;&nbsp;&nbsp;&nbsp;
+
+          //this will <b>change</b> to the dvdrental database</tt><tt><br>
         </tt></span><span style="font-family: Times New
         Roman,Times,serif;"><tt><b><span style="font-family: Times New
-              Roman,Times,serif;">dvdrental=# </span></b>\l&nbsp;&nbsp;&nbsp;
-
-
-
-
-
-
-
-
+              Roman,Times,serif;">dvdrental=# </span><font
+              color="#000099">\l</font></b>&nbsp;&nbsp;&nbsp;
           &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
           //this will <b>list</b> all the database instances in your
           PostgresSQL instance (you should see "dvdrental")</tt><tt><br>
         </tt></span><span style="font-family: Times New
         Roman,Times,serif;"><tt><b><span style="font-family: Times New
-              Roman,Times,serif;">dvdrental=# </span></b>\dt&nbsp;&nbsp;&nbsp;
-
-
-
-
-
-
-
-
-
+              Roman,Times,serif;">dvdrental=# </span><font
+              color="#000099">\dt</font></b>&nbsp;&nbsp;&nbsp;
           &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; //this will
           list (dump) all the tables in the dvdrental database (this
-          should match the logical diagram linked above)<br>
+          should match the logical diagram linked above)</tt></span><span
+        style="font-family: Times New Roman,Times,serif;"><tt><br>
         </tt></span><span style="font-family: Times New
         Roman,Times,serif;"></span></font><small><span
         style="font-family: Times New Roman,Times,serif;"><br>
         Now, issue a few SQL commands to investigate the data (don't
         type the bold prompt and make no changes of course!):<br>
         <br>
-        <tt><b>dvdrental=#</b></tt><tt> select count(*) from customer;<br>
-          dvdrental=# select count(*) from film;<br>
-        </tt><tt><b>dvdrental=#</b></tt><tt> select * from customer
-          limit 10;</tt><tt><br>
-        </tt><tt><b>dvdrental=#</b></tt><tt> select customer_id,
-          first_name, last_name from customer limit 10;</tt></span></small><br>
-    <small><span style="font-family: Times New Roman,Times,serif;"><tt><small><span
-              style="font-family: Times New Roman,Times,serif;"><tt><br>
+        <tt><b>dvdrental=#</b></tt><tt> <b><font color="#000099">select
+              count(*) from customer;</font></b><br>
+          <b>dvdrental=#</b> <b><font color="#000099">select count(*)
+              from film;</font></b><br>
+        </tt><tt><b>dvdrental=#</b></tt><tt> <b><font color="#000099">select
+
+              * from customer limit 10;</font></b></tt><tt><br>
+        </tt><tt><b>dvdrental=#</b></tt><tt> <b><font color="#000099">select
+
+              customer_id, first_name, last_name from customer limit 10;</font></b></tt></span></small><b><font
+        color="#000099"><br>
+      </font></b><small><span style="font-family: Times New
+        Roman,Times,serif;"><tt><small><span style="font-family: Times
+              New Roman,Times,serif;"><tt><br>
               </tt></span></small></tt><tt>&nbsp;</tt><br>
         Examine the output from these commands carefully, especially the
         output from the last.&nbsp; Now exit out of psql:<br>
@@ -356,13 +375,13 @@ href="http://www.postgresqltutorial.com/wp-content/uploads/2018/03/printable-pos
         Roman,Times,serif;"><font size="-1"><span style="font-family:
             Times New Roman,Times,serif;"><tt><span style="font-family:
                 Times New Roman,Times,serif;"><tt><b>dvdrental=#</b></tt><tt>
-                  \q</tt></span></tt></span></font><small><span
+                  <b><font color="#000099">\q</font></b></tt></span></tt></span></font><small><span
             style="font-family: Times New Roman,Times,serif;"><tt><small><span
                   style="font-family: Times New Roman,Times,serif;"><tt><br>
                     <br>
                   </tt></span></small></tt></span></small></span></small><small><span
         style="font-family: Times New Roman,Times,serif;">Create a new
-        subdirectory called "/src/lab5/RMI" in your </span></small><small><span
+        subdirectory called "/src/lab5" in your </span></small><small><span
         style="font-family: Times New Roman,Times,serif;">Lab5PostgresServer
 
 
@@ -372,39 +391,53 @@ href="http://www.postgresqltutorial.com/wp-content/uploads/2018/03/printable-pos
 
 
 
-        container</span></small><small><span style="font-family: Times
-        New Roman,Times,serif;">.&nbsp; Next, download
-        ~mark/pub/51205/src.labs/RMI.tgz and copy it into your container
-        and untar the contents into your RMI subdirectory.&nbsp; You
-        could also scp it from the Linux cluster directly into your
-        container as well.&nbsp; Cat the README file and compile the
-        java client and server.&nbsp; Then execute the server and in a
-        new terminal window execute the client, again making sure
-        everything is running.&nbsp; Refer again to the README file on
-        how to run the client and server.&nbsp; Again you can use
-        "localhost" for the </span></small><small><span
-        style="font-family: Times New Roman,Times,serif;"> &lt;server
-        host address&gt; on the client command line.</span></small><br>
+
+
+        container </span></small><small><span style="font-family: Times
+        New Roman,Times,serif;">and cd into that directory</span></small><small><span
+        style="font-family: Times New Roman,Times,serif;">.&nbsp; cd to
+        that directory.&nbsp; Next, download RMI.tgz from the cluster
+        (see below) and copy it into your container and untar the
+        contents into your lab5 subdirectory:<br>
+        <br>
+        Now, get RMI.tgz down into your container.&nbsp; You can
+        retrieve this file on Canvas under:<br>
+        <br>
+        /Files/LABS/Lab.5/RMI.tgz<br>
+        <br>
+        Now unzip that file and docker cp the tarball into the /src/lab5
+        directory of your postgres SERVER container.<br>
+        <br>
+        Now cd into the new RMI subdirectory and cat the README file and
+        compile the java client and server (ignore any warnings or
+        notes).&nbsp; Then execute the server and in a new terminal
+        window making sure everything is running.&nbsp; Refer again to
+        the README file on how to run the client and server.&nbsp; </span></small><small><span
+        style="font-family: Times New Roman,Times,serif;">Carefully note
+        the IP address of the server (like "172.17.0.<font
+          color="#cc0000">4</font>" etc.).</span></small><br>
     <small><span style="font-family: Times New Roman,Times,serif;"> </span></small><small><span
         style="font-family: Times New Roman,Times,serif;"><br>
       </span></small><small><span style="font-family: Times New
         Roman,Times,serif;">Are you having fun yet?&nbsp; <br>
         <br>
-        <b>NOTE</b>:&nbsp; There is a free GUI front end for MacOS for
-        PostgresSQL that is available for download <a
-          href="http://www.psequel.com">here</a> called PSequel.&nbsp;
-        You may choose to install it.&nbsp; Here's a snapshot of PSequel
-        executing that last select query above (hitting our dvdrental
-        database in our PostgresSQL container):<br>
+        <b>NOTE</b>:&nbsp; There are a few free GUI front ends for MacOS
+        for PostgresSQL that are available for download.&nbsp; Go <a
+          href="https://dbeaver.io/download/">here</a> to download the
+        community version of DBeaver.&nbsp; You may choose to install
+        it.&nbsp; Here's a snapshot of DBeaver connected to the
+        dbdrental database in the docker container and executing that
+        last select query above (hitting our dvdrental database in our
+        PostgresSQL container):<br>
         <br>
       </span></small><small><span style="font-family: Times New
         Roman,Times,serif;"></span></small><span style="font-weight:
-      bold;"></span><img src="PSequel.png" alt="" width="404"
-      height="364"><br>
+      bold;"></span><img src="DBeaver.png" alt="dbeaver" width="597"
+      height="571"><br>
     <small><span style="font-family: Times New Roman,Times,serif;"><br>
       </span></small><small><span style="font-family: Times New
         Roman,Times,serif;">There may be other tools for other OSs
-        similar to PSequel on the mac.<br>
+        similar to DBeaver on the mac, including TablePlus.<br>
         <br>
         This container will serve as your <span style="font-weight:
           bold;">SERVER</span> container for the synchronous exercise of
@@ -418,47 +451,45 @@ href="http://www.postgresqltutorial.com/wp-content/uploads/2018/03/printable-pos
         </small></span></span><small><span style="font-family: Times New
         Roman,Times,serif;"></span></small><small><span
         style="font-family: Times New Roman,Times,serif;"><br>
-        Exec into your httpd CLIENT container </span></small><small><span
+        Exec into your tomcat container </span></small><small><span
         style="font-family: Times New Roman,Times,serif;">Lab5HttpdServer</span></small><small><span
         style="font-family: Times New Roman,Times,serif;"> (if you're
-        not already there).<br>
+        not already there).&nbsp; Make sure you are in your
+        /src/lab5/RMI.orig/RMI directory.<br>
         <br>
-        Now, let's make sure that our Java programs can hit our Postgres
-        server.&nbsp; Get the Postgres java driver down.&nbsp; You can
-        scp it from inside your container from my pub server at
-        ~mark/pub/51205/src.labs/postgresql-42.2.8.jar.&nbsp; Store it
-        in the root directory of</span></small><small><span
-        style="font-family: Times New Roman,Times,serif;"> your </span></small><small><span
-        style="font-family: Times New Roman,Times,serif;">Lab5HttpdServer
-
-
-
-
-
-
-
-
-        container</span></small><small><span style="font-family: Times
-        New Roman,Times,serif;">.&nbsp; Now, set your CLASSPATH so that
-        it includes this directory, something like:<br>
+        Make sure you are in your /src/lab5/RMI directory.&nbsp; Get the
+        Postgres java driver down:<br>
         <br>
-        export CLASSPATH=/postgresql-42.2.8.jar:. <br>
+        <font color="#000099">apt-get update<br>
+          apt-get install -y curl<br>
+          curl -fL -o postgresql-42.7.5.jar
+https://repo1.maven.org/maven2/org/postgresql/postgresql/42.7.5/postgresql-42.7.5.jar<br>
+        </font><br>
+      </span></small><small><span style="font-family: Times New
+        Roman,Times,serif;">Now, set your CLASSPATH so that it includes
+        this directory, something like:<br>
+        <br>
+        <font color="#000099">export
+          CLASSPATH=/src/lab5/RMI/postgresql-42.7.5.jar:. </font><br>
         <br>
         Make <span style="font-style: italic;">sure</span> that you
         don't forget the final ":." in that line above! <br>
         <br>
-        Now, get JdbcTest.java from the cluster at
-        ~mark/pub/51205/src.labs/JdbcTest.java, and copy it into your
-        Lab5HttpdServer container, maybe into the same subdirectory
-        you're using for you RMI code.&nbsp; Now compile
-        JdbcTest.java.&nbsp; Make sure whatever terminal you use to
-        execute javac or java has the CLASSPATH set above.&nbsp; <br>
+        Now, get JdbcTest.java.You can retrieve this file on Canvas
+        under:<br>
+        <br>
+        /Files/LABS/Lab.5/JdbcTest.java<br>
+        <br>
+        docker cp it into your Lab5HttpdServer container, maybe into the
+        same subdirectory you're using for you RMI code.&nbsp; Now
+        compile JdbcTest.java.&nbsp; Make sure whatever terminal you use
+        to execute javac or java has the CLASSPATH set above.&nbsp; <br>
         <br>
       </span></small><span style="font-family: Times New
       Roman,Times,serif;"><span style="font-weight: bold;"></span></span><small><span
         style="font-family: Times New Roman,Times,serif;">Find out the
-        IP address of the Server container.&nbsp; Inside your
-        Lab5PostgresServer</span></small><small><span
+        IP address of the Postgres Server container (you should have
+        noted it above).&nbsp; Inside your Lab5PostgresServer</span></small><small><span
         style="font-family: Times New Roman,Times,serif;"> container,
         type <span style="font-weight: bold;">ifconfig</span>.&nbsp;
         Note the IP address of the eth0 interface in that container (it
@@ -466,20 +497,54 @@ href="http://www.postgresqltutorial.com/wp-content/uploads/2018/03/printable-pos
         like that).</span></small><small><span style="font-family: Times
         New Roman,Times,serif;"> Pay particular attention to the proper
         IP address of your Postgres server container.&nbsp; It may be
-        172.17.0.2 or </span></small><small><span style="font-family:
-        Times New Roman,Times,serif;">172.17.0.3 or something
-        else.&nbsp; You may need to replace the connectionUrl string's
-        IP address in your JdbcTest.java file with the correct actual
+        172.17.0.3 or </span></small><small><span style="font-family:
+        Times New Roman,Times,serif;">172.17.0.4 or something
+        else.&nbsp; You need to replace the connectionUrl string's IP
+        address in your JdbcTest.java file with the correct actual
         server IP.&nbsp; Note that the root user and password secret
         lines should be fine.&nbsp; Recompile </span></small><small><span
-        style="font-family: Times New Roman,Times,serif;">JdbcTest.java</span></small><small><span
-        style="font-family: Times New Roman,Times,serif;"> and run
-        it.&nbsp; Hopefully, you will get output that matches the same
-        output from the last query command you typed in the PostgresSQL
-        shell above, namely, you'll see Jared Ely, Mary Smith, Patricia
-        Johnson, all good friends of mine.&nbsp; If so, you're in great
+        style="font-family: Times New Roman,Times,serif;">JdbcTest.java
+        in Lab5HttpdServer</span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"> and run it
+        with this command:<br>
+        <br>
+        <font color="#000099">java JdbcTest</font><br>
+        <br>
+        Hopefully, you will get output that matches the same output from
+        the last query command you typed in the PostgresSQL shell above,
+        namely, you'll see Jared Ely, Mary Smith, Patricia Johnson, all
+        good friends of mine:<br>
+        <br>
+        <font color="#006600"><b><tt>calling Class.forName()</tt></b><b><tt><br>
+            </tt></b><b><tt>building connection string</tt></b><b><tt><br>
+            </tt></b><b><tt>calling getConnection</tt></b><b><tt><br>
+            </tt></b><b><tt>executing query</tt></b><b><tt><br>
+            </tt></b><b><tt>entering for loop</tt></b><b><tt><br>
+            </tt></b><b><tt>customer id: 524, First Name: Jared, Last
+              Name: Ely</tt></b><b><tt><br>
+            </tt></b><b><tt>customer id: 1, First Name: Mary, Last Name:
+              Smith</tt></b><b><tt><br>
+            </tt></b><b><tt>customer id: 2, First Name: Patricia, Last
+              Name: Johnson</tt></b><b><tt><br>
+            </tt></b><b><tt>customer id: 3, First Name: Linda, Last
+              Name: Williams</tt></b><b><tt><br>
+            </tt></b><b><tt>customer id: 4, First Name: Barbara, Last
+              Name: Jones</tt></b><b><tt><br>
+            </tt></b><b><tt>customer id: 5, First Name: Elizabeth, Last
+              Name: Brown</tt></b><b><tt><br>
+            </tt></b><b><tt>customer id: 6, First Name: Jennifer, Last
+              Name: Davis</tt></b><b><tt><br>
+            </tt></b><b><tt>customer id: 7, First Name: Maria, Last
+              Name: Miller</tt></b><b><tt><br>
+            </tt></b><b><tt>customer id: 8, First Name: Susan, Last
+              Name: Wilson</tt></b><b><tt><br>
+            </tt></b><b><tt>customer id: 9, First Name: Margaret, Last
+              Name: Moore</tt></b></font><b><tt><br>
+          </tt></b><br>
+        If you see something resembling this, you're in great
         shape.&nbsp; Your JdbcTest java test program running on the
-        CLIENT just hit your Postgres instance in your SERVER.<br>
+        CLIENT Lab5HttpdServer just hit your Postgres instance in your
+        SERVER&nbsp; Lab5PostgresServer.<br>
         <br>
         You are indeed a Boss.<br>
         <br>
@@ -522,12 +587,16 @@ href="http://www.postgresqltutorial.com/wp-content/uploads/2018/03/printable-pos
 
 
 
+
+
         SERVER execute the RMIServer program.<br>
         <br>
         On your </span></small><small><span style="font-family: Times
         New Roman,Times,serif;"></span></small><small><span
         style="font-family: Times New Roman,Times,serif;"></span></small><small><span
         style="font-family: Times New Roman,Times,serif;">Lab5PostgresServer
+
+
 
 
 
@@ -545,11 +614,12 @@ href="http://www.postgresqltutorial.com/wp-content/uploads/2018/03/printable-pos
         style="font-family: Times New Roman,Times,serif;">Lab5HttpdServer</span></small><small><span
         style="font-family: Times New Roman,Times,serif;">), execute
         your client against your server, using a command similar to
-        this:&nbsp; "java RMIClient 172.17.0.3 12345 hi".&nbsp; Of
-        course you would use the correct IP address.&nbsp; Make sure
-        that your RMIServer prints out the string&nbsp; you passed
-        in.&nbsp; Once that's done, you're almost finished.&nbsp; You
-        can stop your RMIServer program.</span></small><small><span
+        this:&nbsp; "java RMIClient 172.17.0.3 12345 "hi".&nbsp; <br>
+        <br>
+        Of course you would use the correct IP address for your
+        SERVER.&nbsp; Make sure that your RMIServer prints out the
+        string&nbsp; you passed in.&nbsp; Once that's done, you're
+        almost finished.&nbsp; You can stop your RMIServer program.</span></small><small><span
         style="font-family: Times New Roman,Times,serif;"></span></small><br>
     <small><span style="font-family: Times New Roman,Times,serif;"> <br>
       </span></small><span style="font-weight: bold;">STEP 6</span>:<br>
@@ -572,27 +642,30 @@ href="http://www.postgresqltutorial.com/wp-content/uploads/2018/03/printable-pos
 
 
 
+
+
       </span></small><small><span style="font-family: Times New
         Roman,Times,serif;">SERVER that is running your Postgres
         instance, use vi (or whatever you've installed as its
         alternative) to modify the RemoteInterface.java code.&nbsp;
-        Change the RemoteInterface classes's recieveMessage method so
+        Change the RemoteInterface class's recieveMessage() method so
         that instead of returning void, it returns an int.&nbsp; <br>
         <br>
         Then, modify on the CLIENT the source code for
         RemoteInterface.java, and make the same change to the return
         value of the receiveMessage() call from void to int, as your new
         receiveMessage() function will be returning an int instead of a
-        void.&nbsp; <br>
+        void.&nbsp; Have that function print out the integer returned
+        from the server via receiveMessage().<br>
         <br>
-        Then, create a function in your RMIServer.java source (<span
+        Then, create a new function in your RMIServer.java source (<span
           style="font-style: italic;">very</span> <span
           style="font-style: italic;">similar</span> to the main()
         function in JdbcTest class in JdbcTest.java) on your SERVER that
         when called and passed in a String <span style="font-style:
-          italic;">tableName</span>, hits the (local to the container)
-        PostgresSQL database table whose name was passed in, and
-        executes a SELECT COUNT(*) on that table, and returns the
+          italic;">tableName</span>, hits the (local to the SERVER
+        container) PostgresSQL database table whose name was passed in,
+        and executes a SELECT COUNT(*) on that table, and returns the
         numeric result of the number of records in the table returned
         from the SELECT call.&nbsp; So, for example, if you pass in the
         table name "customer" to the client, the remote server would
@@ -610,9 +683,11 @@ href="http://www.postgresqltutorial.com/wp-content/uploads/2018/03/printable-pos
         <br>
         the remote server would return 1000, because there are 1000
         records in the film table on the server.&nbsp; So the prototype
-        of the new function might be something like:<br>
+        of the new functions might be something like:<br>
         <br>
         <span style="font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -624,6 +699,8 @@ href="http://www.postgresqltutorial.com/wp-content/uploads/2018/03/printable-pos
           public int execute_it(String tableName) </span><br
           style="font-family: Courier New,Courier,monospace;">
         <span style="font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -644,6 +721,8 @@ href="http://www.postgresqltutorial.com/wp-content/uploads/2018/03/printable-pos
 
 
 
+
+
           //this code will hit the local Postgres database table
           "tableName" and execute a query similar to </span></span></small><small><span
         style="font-family: Times New Roman,Times,serif;"><span
@@ -651,25 +730,22 @@ href="http://www.postgresqltutorial.com/wp-content/uploads/2018/03/printable-pos
           from departments", <br>
           &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; //and will return the
           result set's result, in this case, the int "9" because there
-          are 9 records in the departments table...</span><br
+          are 9 records in the departments table...<br>
+          &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+          System.out.println("Server returned integer result: "+retval);<br>
+          &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; return retval;<br
+            style="font-family: Courier New,Courier,monospace;">
+        </span> <span style="font-family: Courier
+          New,Courier,monospace;">&nbsp;&nbsp;&nbsp; }</span><br
           style="font-family: Courier New,Courier,monospace;">
-        <span style="font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;
-
-
-
-
-
-
-
-
-          }</span><br style="font-family: Courier
-          New,Courier,monospace;">
         <br>
         Then simply have your receiveMessage function that implements
         RemoteInterface call your new function and return the result,
         such as:<br>
         <br>
         <span style="font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -690,10 +766,14 @@ href="http://www.postgresqltutorial.com/wp-content/uploads/2018/03/printable-pos
 
 
 
+
+
           {</span><br style="font-family: Courier
           New,Courier,monospace;">
         <span style="font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 System.out.println("In
+
+
 
 
 
@@ -714,11 +794,18 @@ System.out.println("In
 
 
 
+
+
           <span style="font-weight: bold;">int y</span> =
           execute_it(tableName);&nbsp; // the return value is the number
-          of rows in tableName</span><br style="font-family: Courier
-          New,Courier,monospace;">
-        <span style="font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          of rows in tableName<br>
+          &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+          System.out.println("Returning integer y from RMIServer:"+y);<br
+            style="font-family: Courier New,Courier,monospace;">
+        </span> <span style="font-family: Courier
+          New,Courier,monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -730,6 +817,8 @@ System.out.println("In
           return y;&nbsp; </span><br style="font-family: Courier
           New,Courier,monospace;">
         <span style="font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -788,11 +877,15 @@ may
 
 
 
+
+
         find the following references helpful (in addition to the links
         from previous labs):</font></p>
     <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><a
 href="https://www.tecmint.com/useful-basic-commands-of-apt-get-and-apt-cache-for-package-management/">Ubuntu
 package
+
+
 
 
 
@@ -814,6 +907,8 @@ href="https://www.tecmint.com/useful-basic-commands-of-apt-get-and-apt-cache-for
     <small><a
 href="https://keraton.gitbooks.io/docker-cheat-sheet/content/dockercommand_essentials_md.html">Docker
 Cheat
+
+
 
 
 
