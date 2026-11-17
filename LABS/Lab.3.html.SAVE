@@ -1,0 +1,910 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;
+      charset=windows-1252">
+    <meta name="Author" content="JMS">
+    <meta name="GENERATOR" content="Mozilla/4.79 [en] (X11; U; Linux
+      2.4.18-4custom i686) [Netscape]">
+    <title>MPCS_51205-Lab_3</title>
+  </head>
+  <body style="color: rgb(0, 0, 0); background-color: rgb(255, 255,
+    255);" vlink="#ff0000" link="#0000ff" alink="#000088">
+    <font style="font-family: Times New Roman,Times,serif;" size="+2">Lab
+
+
+
+
+
+
+      3 Details for MPCS 51205<br>
+    </font>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Each
+lab
+
+
+
+
+
+
+        will consist of a small problem and details of&nbsp; how to
+        proceed. Each lab is intended to give every student hands-on
+        experience with the core technologies utilized during the
+        course.&nbsp; A student may concentrate, as a team member, on
+        one technology over another for the final project, but labs are
+        designed to give each and every student exposure to all the
+        technologies that come into play.&nbsp; You need to submit labs
+        to the TAs for grading--see submission instructions below.&nbsp;
+        Generally, unless otherwise specified, you will have one week to
+        complete each assigned lab.</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">See
+the
+
+
+
+
+
+
+        syllabus for information on grading.&nbsp; Turning in lab
+        assignments on time is required, without exception, and <span
+          style="font-style: italic;">all late deliveries will be
+          penalized</span>, <span style="font-style: italic;">regardless
+
+
+
+
+
+          of cause</span>.&nbsp; Submit your assignments to the
+        subversion repository according to the directions on the
+        syllabus page.</font> </p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">For
+
+
+
+
+
+
+        steps 1-3, you will be working in Java.&nbsp; F</font><font
+        size="-1">or Step 4 below, you may write these solutions in <span
+          style="font-style: italic;">either</span> Java or C++ or
+        Python or whatever language you wish...your choice, as long as
+        it's supported under RabbitMQ.<br>
+      </font> </p>
+    <p style="font-family: Times New Roman,Times,serif;"><b><u>Lab 3</u></b>
+      &nbsp; <font color="#ff0000">Due: 5:00 pm, Tuesday, November 10,
+        2026</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><u>Problem
+        1:&nbsp; Playing With Docker and RabbitMQ:</u>&nbsp; <font
+        size="-1"><br>
+      </font></p>
+    <small><span style="font-family: Times New Roman,Times,serif;"></span></small>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><big><span
+            style="font-weight: bold;">BACKGROUND</span>:</big><br>
+      </font></p>
+    <small><span style="font-family: Times New Roman,Times,serif;">Like
+        all programming problems, learning a new technology is not an
+        exercise in reading but rather and exercise in typing.&nbsp;
+        This lab is designed to give you hands-on experience in (a)
+        running a dockerized RabbitMQ and (b) creating a RabbitMQ
+        message queue and (c) having two different programs (a producer
+        and a consumer, written in whatever language that RabbitMQ
+        supports that you wish to implement in, although you will start
+        out in Java) in multiple separate containers (you will have at
+        least 3 containers running) pass messages over that queue.&nbsp;
+        You will generally find the References section below helpful in
+        addition to the required and recommended reading.&nbsp; When we
+        talk about "Docker", we are talking specifically about the <span
+          style="font-style: italic;">Stable Community Edition</span> of
+        Docker, which is the version we will be using in this
+        class.&nbsp; The Stable Community Edition provides the basic
+        container engine and built-in orchestration, networking, and
+        security.</span></small><br>
+    <font size="-1"><span style="font-weight: bold;"></span></font>
+    <p style="font-family: Times New Roman,Times,serif;"><big><b><font
+            size="-1"><big>WHAT YOU NEED TO DO:</big></font></b></big></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">For
+this
+
+
+
+
+
+
+        third lab, we are going to code a microservice that runs
+        RabbitMQ and two client microservices (each running in its own
+        container) that pass messages over the queue.&nbsp; You will
+        work through a couple of the very fine examples provided on the
+        RabbitMQ website and then you will each write a Request/Response
+        RPC producer/consumer yourselves.</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"> </p>
+    <p style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;">STEP 1</span>:<big> <br>
+      </big></p>
+    <p style="font-family: Times New Roman,Times,serif;"><span
+        style="font-family: Times New Roman,Times,serif;"><span
+          style="font-weight: bold;"><small>Get RabbitMQ in a Docker
+            Container (RABBITMQ)</small><br>
+        </span></span> </p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">First,
+make
+
+
+
+
+
+
+        sure docker is running in your environment.&nbsp; Next, get down
+        a dockerized RabbitMQ:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><span
+          style="font-weight: bold;">On Linux (or VirtualBox VM):</span><br>
+        <br>
+        docker run -d --hostname my-wabbit --name MyWabbit </font><font
+        size="-1">rabbitmq:3-management</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><span
+          style="font-weight: bold;">On the Mac:</span><br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif; color: black;"><font
+        size="-1">docker run -d --hostname my-wabbit --name MyWabbit -p
+        15672:15672 -p 5672:5672 rabbitmq:3-management</font></p>
+    <p style="font-family: Times New Roman,Times,serif; color: black;"><font
+        size="-1">In this latter MAC command you have mapped the
+        management console port to 15672 on the mac AND you have mapped
+        port 5672 on the MAC.&nbsp; THIS is the port that rabbitmq
+        server listens on by default for new connections:&nbsp; <br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif; color: black;"><font
+        size="-1">"For RabbitMQ to accept client connections, it needs
+        to bind to one or more interfaces and listen on
+        (protocol-specific) ports. The interfaces are configured using
+        the rabbit.tcp_listeners config option. By default, RabbitMQ
+        will listen on port 5672 on all available interfaces".&nbsp;
+        Cf.: https://www.rabbitmq.com/networking.html.&nbsp; Note the
+        Linux version of docker will map ports for you.<br>
+      </font></p>
+    <font size="-1">Then, exec a shell into your container:<br>
+    </font>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">docker
+
+
+
+
+
+
+        exec -it MyWabbit /bin/bash</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">update
+
+
+
+
+
+
+        the software:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">apt-get
+
+
+
+
+
+
+        update<br>
+        apt-get install -y procps<br>
+      </font><small><span style="font-family: Times New
+          Roman,Times,serif;"> apt-get install </span></small><small><span
+          style="font-family: Times New Roman,Times,serif;"><font
+            size="-1">-y </font>vim<br>
+          apt-get install </span></small><small><span
+          style="font-family: Times New Roman,Times,serif;"><font
+            size="-1">-y </font>net-tools<br>
+          apt-get install </span></small><small><span
+          style="font-family: Times New Roman,Times,serif;"><font
+            size="-1">-y </font>openssh-client</span></small></p>
+    <p style="font-family: Times New Roman,Times,serif;"><small><span
+          style="font-family: Times New Roman,Times,serif;"> <span
+            style="font-weight: bold;">NOTE:&nbsp; DO NOT install
+            default-jdk as you will not need it...and there are issues.<br>
+            <br>
+          </span></span></small><font size="-1">Stay in your
+        container...</font><br>
+    </p>
+    <span style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"></span></span>
+    <p style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;">STEP 2</span>:</p>
+    <span style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small>Get down a docker container
+          for ubuntu 18.04.&nbsp; </small></span></span><span
+      style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small>This will be for your Message
+          Producer.</small></span></span><span style="font-family: Times
+      New Roman,Times,serif;"><span style="font-weight: bold;"><br>
+      </span><br>
+    </span><font size="-1">Next, in a new terminal window in your VM,
+      get down an ubuntu:18.04 container and name that container
+      "MsgProducer":<br>
+      <br>
+      <span style="color: rgb(0, 0, 153);">docker run -di --hostname
+        msgproducer --name MsgProducer ubuntu:18.04</span><br
+        style="color: rgb(0, 0, 153);">
+      <br style="color: rgb(0, 0, 153);">
+      <span style="color: rgb(0, 0, 153);">docker exec -it MsgProducer
+        /bin/bash</span><br>
+    </font><font size="-1"><span style="font-family: Times New
+        Roman,Times,serif;"><br>
+        Now, </span>update the software in MsgProducer:</font> <font
+      size="-1"><br>
+      <br>
+      <span style="color: rgb(0, 0, 153);">apt-get update</span><br
+        style="color: rgb(0, 0, 153);">
+      <span style="color: rgb(0, 0, 153);"> apt-get install -y procps</span><br
+        style="color: rgb(0, 0, 153);">
+    </font><small><span style="font-family: Times New
+        Roman,Times,serif;"><span style="color: rgb(0, 0, 153);">
+          apt-get install </span></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"><span
+          style="color: rgb(0, 0, 153);"><font size="-1">-y </font>vim</span><br
+          style="color: rgb(0, 0, 153);">
+        <span style="color: rgb(0, 0, 153);"> apt-get install </span></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"><span
+          style="color: rgb(0, 0, 153);"><font size="-1">-y
+            openjdk-8-jdk-headless</font></span><br style="color: rgb(0,
+          0, 153);">
+        <span style="color: rgb(0, 0, 153);"> apt-get install </span></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"><span
+          style="color: rgb(0, 0, 153);"><font size="-1">-y </font>net-tools</span><br
+          style="color: rgb(0, 0, 153);">
+        <span style="color: rgb(0, 0, 153);"> apt-get install </span></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"><span
+          style="color: rgb(0, 0, 153);"><font size="-1">-y </font>openssh-client</span><span
+          style="font-weight: bold;"></span></span></small><br>
+    <font size="-1"> <br>
+      Then, install the RabbitMQ client tarball into your MsgProducer
+      container under the /opt directory in your container:<br>
+      <br>
+      <span style="color: rgb(0, 0, 153);">scp <i>userid</i>@linux.cs.uchicago.edu:/stage/classes/archive/2019/fall/51205-1/libs/rabbitmq-java-client-5.6.0.tgz
+
+
+
+
+
+
+        .</span><br>
+      [enter your user id and password on the cluster]<br>
+      <br>
+      root@msgproducer:/# <span style="color: rgb(0, 0, 153);">ls
+        rabbit*</span><br>
+      rabbitmq-java-client.tgz&nbsp; <br>
+      <br>
+      root@msgproducer:/# <span style="color: rgb(0, 0, 153);">cd /opt</span><br>
+      root@msgproducer:/opt# <span style="color: rgb(0, 0, 153);">tar
+        xzvf ../rabbitmq-java-client-5.6.0.tgz <br>
+      </span><br>
+      root@msgproducer:/opt# mkdir rabbitmq-java-client<br>
+      root@msgproducer:/opt# mv ./*.jar ./rabbitmq-java-client/<br>
+      <br>
+      root@msgproducer:/opt# <span style="color: rgb(0, 0, 153);">find
+        rabbitmq-java-client/</span><br>
+      rabbitmq-java-client/<br>
+      rabbitmq-java-client/slf4j-simple-1.7.25.jar<br>
+      rabbitmq-java-client/amqp-client-5.6.0.jar<br>
+      rabbitmq-java-client/slf4j-api-1.7.25.jar<br>
+      <br>
+      Now set your class path in your container to (note this example
+      assumes you've downloaded the client libs to
+      /opt/rabbitmq-java-client):<br>
+      &nbsp; <br>
+      <span style="color: rgb(0, 0, 153);">export
+CLASSPATH=/opt/rabbitmq-java-client/amqp-client-5.6.0.jar:/opt/rabbitmq-java-client/slf4j-api-1.7.25.jar:/opt/rabbitmq-java-client/slf4j-simple-1.7.25.jar:.</span><br>
+      <br>
+      Don't forget the ":." at the end.&nbsp; Now, create a directory to
+      work in:<br>
+      <br>
+      <span style="color: rgb(0, 0, 153);">mkdir -p /src/HelloWorld</span><br
+        style="color: rgb(0, 0, 153);">
+      <span style="color: rgb(0, 0, 153);">cd /src/HelloWorld</span><br>
+      <br>
+    </font><span style="font-weight: bold;">STEP 2</span>a:<br>
+    <font size="-1"> <br>
+      Visit the <a href="https://www.rabbitmq.com/getstarted.html">RabbitMQ
+
+
+
+
+
+
+        Tutorial Site</a> and look under the Hello World! example and
+      and download the producer-related code for java:&nbsp; click on
+      Java, and then scroll down the page until you see the "Sending"
+      section (this will be the producer), and download the file
+      "Send.java" and put it into the /src/HelloWorld directory on
+      MsgProducer.<br>
+      <br>
+      Compile Send.java and make sure you modify the
+      factory.setHost("localhost") to whatever host you have your
+      RabbitMQ container running in from STEP 1, such as
+      "172.17.0.2".&nbsp; Your mileage may vary.<br>
+      <br>
+      Work through each line of the Send.java code, and referring to the
+      <a
+href="https://www.rabbitmq.com/releases/rabbitmq-java-client/v3.4.1/rabbitmq-java-client-javadoc-3.4.1/allclasses-noframe.html">javadocs</a>,
+      make sure you understand the main AQMP and RabbitMQ calls that are
+      made in the source.</font><br>
+    <font size="-1"><font size="-1"><br>
+        Compile Send.java:<br>
+        javac Send.java<br>
+        <br>
+      </font>Then execute "java Send" from MsgProducer container <br>
+      <br>
+      root@msgproducer:/src/HelloWorld# <span style="color: rgb(0, 0,
+        153);">java Send</span><br>
+      &nbsp;[x] Sent 'Hello World!'<br>
+      <br>
+      Then, in your MyWabbit container, verify that your queue has one
+      message on it (the "hello" queue has 1 message):<br>
+      <br>
+      root@my-wabbit:/# <span style="color: rgb(0, 0, 153);">rabbitmqctl
+
+
+
+
+
+
+        list_queues</span><br>
+      Listing queues<br>
+      hello&nbsp;&nbsp;&nbsp; 1<br>
+      <br>
+      Use the RabbitMQ management console running in a browser in your
+      VirtualBox VM and hit:&nbsp; http://172.17.0.2:15672/. Of course
+      substitute the IP address of your MyWabbit container in the above
+      URL.&nbsp; On a Mac, enter instead http://localhost:15672/ because
+      of the defined port mapping.<br>
+      <br>
+      If you are asked to log into RabbitMQ, the default username is
+      "guest" and the default password is "guest".<br>
+      <br>
+      Examine the message that was sent under the Queues Tab under "Get
+      Messages":<br>
+      <br>
+      <img style="width: 453px; height: 440px;" alt="GetMessages"
+        src="GetMessages.jpg"><br>
+      <br>
+      Finally, use docker save to save your container to a new image.<br>
+    </font><small><span style="font-family: Times New
+        Roman,Times,serif;"><br>
+      </span></small><span style="font-weight: bold;">STEP 3:<br>
+      <br>
+    </span><span style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small>Get down another docker
+          container for ubuntu 18.04.&nbsp; This will be for your
+          Message Consumer.</small><br>
+      </span><br>
+    </span><font size="-1">Next, Get down an ubuntu:18.04 container and
+      name that container "MsgConsumer".<br>
+      <br>
+    </font><font size="-1"><span style="color: rgb(0, 0, 153);">docker
+        run -di --hostname msgconsumer --name MsgConsumer ubuntu:18.04</span><br
+        style="color: rgb(0, 0, 153);">
+      <br style="color: rgb(0, 0, 153);">
+      <span style="color: rgb(0, 0, 153);"> docker exec -it MsgConsumer
+        /bin/bash</span><br>
+    </font><font size="-1"><span style="font-family: Times New
+        Roman,Times,serif;"><br>
+        Now, </span>update the software in MsgConsumer:</font> <font
+      size="-1"><br>
+      <br>
+      <span style="color: rgb(0, 0, 153);"> apt-get update</span><br
+        style="color: rgb(0, 0, 153);">
+      <span style="color: rgb(0, 0, 153);"> apt-get install -y procps</span><br
+        style="color: rgb(0, 0, 153);">
+    </font><small><span style="font-family: Times New
+        Roman,Times,serif;"><span style="color: rgb(0, 0, 153);">
+          apt-get install -y vim</span><br style="color: rgb(0, 0,
+          153);">
+        <span style="color: rgb(0, 0, 153);">apt-get install -y
+          openjdk-8-jdk-headless<br>
+        </span><span style="color: rgb(0, 0, 153);">apt-get install -y
+          net-tools</span><br style="color: rgb(0, 0, 153);">
+        <span style="color: rgb(0, 0, 153);"> apt-get install -y
+          openssh-client</span><span style="font-weight: bold;"><br>
+        </span></span></small><font size="-1"><br>
+      Then, install the RabbitMQ client tarball into your MsgConsumer
+      under the /opt directory as you did above in Step 2:<br>
+      <br>
+      <span style="color: rgb(0, 0, 153);">scp
+        userid@linux.cs.uchicago.edu:/stage/classes/archive/2019/fall/51205-1/libs/rabbitmq-java-client-5.6.0.tgz
+
+
+
+
+
+
+        .<br>
+        <font color="#000000">[enter your user id and password on the
+          cluster]</font></span><br>
+      <br>
+      root@msgconsumer:/# <span style="color: rgb(0, 0, 153);">ls
+        rabbit*</span><br>
+      rabbitmq-java-client.tgz&nbsp; <br>
+      <br>
+      root@</font><font size="-1">msgconsumer</font><font size="-1">:/#
+      <span style="color: rgb(0, 0, 153);">cd opt</span><br>
+      root@</font><font size="-1">msgconsumer</font><font size="-1">:/opt#
+
+
+
+
+
+
+      <span style="color: rgb(0, 0, 153);">tar xzvf
+        ../rabbitmq-java-client-5.6.0.tgz </span><br style="color:
+        rgb(0, 0, 153);">
+    </font><br>
+    <font size="-1"><font size="-1">root@msgproducer:/opt# mkdir
+        rabbitmq-java-client<br>
+        root@msgproducer:/opt# mv ./*.jar ./rabbitmq-java-client/<br>
+        <br>
+      </font></font><font size="-1">root@msgproducer:/opt# <span
+        style="color: rgb(0, 0, 153);">find rabbitmq-java-client/</span><br>
+      rabbitmq-java-client/<br>
+      rabbitmq-java-client/slf4j-simple-1.7.25.jar<br>
+      rabbitmq-java-client/amqp-client-5.6.0.jar<br>
+      rabbitmq-java-client/slf4j-api-1.7.25.jar<br>
+    </font><font size="-1"><br>
+      Then, set your class path to (note this example assumes you've
+      downloaded the client libs to /opt/rabbitmq-java-client):<br>
+      &nbsp; <br>
+      <span style="color: rgb(0, 0, 153);">export
+CLASSPATH=/opt/rabbitmq-java-client/amqp-client-5.6.0.jar:/opt/rabbitmq-java-client/slf4j-api-1.7.25.jar:/opt/rabbitmq-java-client/slf4j-simple-1.7.25.jar:.</span><br
+        style="color: rgb(0, 0, 153);">
+      <br>
+    </font><font size="-1">Don't forget the ":." at the end.&nbsp; </font><font
+      size="-1"> Now, create a directory to work in:<br>
+      <br>
+      <span style="color: rgb(0, 0, 153);">mkdir -p /src/HelloWorld</span><br
+        style="color: rgb(0, 0, 153);">
+      <span style="color: rgb(0, 0, 153);"> cd /src/HelloWorld</span><br>
+      <br>
+    </font><span style="font-weight: bold;">STEP 3</span>a:<br>
+    <font size="-1"> <br>
+      Visit the <a href="https://www.rabbitmq.com/getstarted.html">RabbitMQ
+
+
+
+
+
+
+        Tutorial Site</a> and look under the Hello World! example and
+      and download the consumer-related code for java:&nbsp; click on
+      Java, and then scroll down the page until you see the "Receiving"
+      section (this will be the consumer), and download the file
+      "Recv.java" and put it into the /src/HelloWorld directory on
+      MsgConsumer.<br>
+      <br>
+      Compile Recv.java and make sure you modify the
+      factory.setHost("localhost") to whatever host you have your
+      RabbitMQ MyWabbit container running in from STEP 1, such as
+      "172.17.0.2".&nbsp; Your mileage may vary.<br>
+      <br>
+      Work through each line of the Recv.java code, and referring to the
+      <a
+href="https://www.rabbitmq.com/releases/rabbitmq-java-client/v3.4.1/rabbitmq-java-client-javadoc-3.4.1/allclasses-noframe.html">javadocs</a>,
+      make sure you understand the main AQMP and RabbitMQ calls that are
+      made in the source.<br>
+      <br>
+      Compile Recv.java:<br>
+      javac Recv.java<br>
+      <br>
+      Then execute "java Recv" from MsgProducer container <br>
+      <br>
+      root@msgconsumer:/src/HelloWorld# <span style="color: rgb(0, 0,
+        153);">java Recv</span><br>
+      &nbsp;[*] Waiting for messages. To exit press CTRL+C<br>
+      &nbsp;[x] Received 'Hello World!'<br>
+      <br>
+      Then, </font><font size="-1">press CTRL+C to exit.&nbsp; Now i</font><font
+      size="-1">n your MyWabbit container, verify that your queue has no
+      messages on it (the "hello" queue has 0 message):<br>
+      <br>
+      root@my-wabbit:/# <span style="color: rgb(0, 0, 153);">rabbitmqctl
+
+
+
+
+
+
+        list_queues</span><br>
+      Listing queues<br>
+      hello&nbsp;&nbsp;&nbsp; 0<br>
+      <br>
+      This means of course the message on the queue was consumed (and
+      removed from the queue).<br>
+      <br>
+      Use the RabbitMQ management console running in a browser in your
+      VirtualBox VM and hit:&nbsp; http://172.17.0.2:15672/</font><font
+      size="-1"><font size="-1">.</font> Of course substitute the IP
+      address of <span style="font-style: italic;">your</span> MyWabbit
+      container in the above URL.&nbsp; </font><font size="-1"><font
+        size="-1">On a Mac, enter instead </font><font size="-1"><font
+          size="-1">http://localhost:15672/ because of the defined port
+          mapping.<br>
+        </font></font>&nbsp;<br>
+      Examine the message that was sent under the Queues Tab and verify
+      that the hello queue as 0 Messages under the Ready column.<br>
+      <br>
+      <img style="width: 453px; height: 440px;" alt="GetMessages"
+        src="NoMessages.jpg"><br>
+      <br>
+      Next, start two MsgConsumers in two seperate terminal windows and
+      a single MsgProducer in a third terminal window.&nbsp; Set your
+      CLASSPATH in each instance of the containers.&nbsp; <span
+        style="font-style: italic;">In each</span> MsgConsumer
+      container, run <span style="color: rgb(0, 0, 153);">java Recv</span>.&nbsp;
+
+
+
+
+
+
+      These programs will block.&nbsp; Then, in the MsgProducer
+      container, run <span style="color: rgb(0, 0, 153);">java Send</span>
+      over and over again.&nbsp; Notice what is happening with each of
+      the two MsgConsumers.&nbsp; You are witnessing Point-to-Point
+      messaging with a round-robin algorithm.<br>
+      <br>
+      Finally, use docker save to save your container to a new image.</font><br>
+    <small><span style="font-family: Times New Roman,Times,serif;"></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"> </span></small><span
+      style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small><br>
+        </small></span></span><span style="font-weight: bold;">STEP 4:<br>
+      <br>
+    </span><span style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small>Repeat with other examples.</small><br>
+      </span><br>
+    </span><small><span style="font-family: Times New
+        Roman,Times,serif;"></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"></span></small><font
+      size="-1">You should have running at this point, and output from
+      "docker ps" should look something like this:<br>
+      <br>
+      <small><small><span style="font-family: Courier
+            New,Courier,monospace;">CONTAINER ID&nbsp;&nbsp;
+            IMAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+COMMAND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+            STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            PORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+            NAMES</span><br style="font-family: Courier
+            New,Courier,monospace;">
+          <span style="font-family: Courier New,Courier,monospace;">fb011b3ff871&nbsp;&nbsp;
+ubuntu:18.04
+
+
+
+
+
+
+
+
+
+
+
+
+
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            minutes ago&nbsp;&nbsp;&nbsp; Up 3
+            minutes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+            MsgConsumer</span><br style="font-family: Courier
+            New,Courier,monospace;">
+          <span style="font-family: Courier New,Courier,monospace;">ce30e9054fbb&nbsp;&nbsp;
+ubuntu:18.04
+
+
+
+
+
+
+
+
+
+
+
+
+
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+4
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            minutes ago&nbsp;&nbsp;&nbsp; Up 4
+            minutes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+            MsgProducer</span><br style="font-family: Courier
+            New,Courier,monospace;">
+          <span style="font-family: Courier New,Courier,monospace;">cd776144660a&nbsp;&nbsp;
+rabbitmq:3-management&nbsp;&nbsp;
+
+
+
+
+
+
+            "docker-entrypoint.sh"&nbsp;&nbsp; 27 minutes
+            ago&nbsp;&nbsp; Up 27 minutes&nbsp; 4369/tcp, 5671-5672/tcp,
+            15671-15672/tcp, 25672/tcp&nbsp;&nbsp; MyWabbit</span></small></small><big><br>
+      </big><br>
+    </font><small><span style="font-family: Times New
+        Roman,Times,serif;"></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;">Now, repeat
+        steps 2a and 3a for the following examples on the RabbitMQ
+        examples <a href="https://www.rabbitmq.com/getstarted.html">website</a>:<br>
+        <br>
+        Work Queues<br>
+        Publish/Subscribe<br>
+        Topics<br>
+        RPC<br>
+        <br>
+        You may now choose any language for the above examples you wish,
+        including Python, Ruby, Go, etc.&nbsp; Whatever you'd like.<br>
+        <br>
+        Follow the instructions on the website on how to run the
+        examples.&nbsp; In particular, run (in separate terminal
+        windows) multiple consumers for the pub-sub and topics
+        examples.&nbsp; For each of these new examples, create another
+        directory under source (at the same level as HelloWorld).&nbsp;
+        For example:<br>
+        <br>
+        src/work-queues<br>
+        src/pub-sub<br>
+        src/topics<br>
+        src/rpc<br>
+        <br>
+        Regardless of what language you choose to work in, make sure you
+        do not just copy and paste the code and simply run it.&nbsp; You
+        <span style="font-style: italic;">must</span> </span></small><font
+      size="-1">work through each line of the rabbit sample code (notice
+      the setup code that is virtually identical across all the examples
+      in a given language), and referring to the <a
+href="https://www.rabbitmq.com/releases/rabbitmq-java-client/v3.4.1/rabbitmq-java-client-javadoc-3.4.1/allclasses-noframe.html">javadocs</a>,
+      make sure you understand the main AQMP and RabbitMQ calls that are
+      made in the source.&nbsp; If you skip this step, you will have
+      learned little, and will put your project deliverable in jeopardy,
+      as it will heavily depend upon messaging including point-to-point,
+      pub/sub, topics, and RPC.<br>
+      <br>
+    </font><font size="-1">For the Work Queues examples, run multiple
+      worker consumers simultaneously in separate windows (just as you
+      did above in the HelloWorld example) inside the MsgConsumer
+      container.&nbsp; </font><font size="-1">Notice what is happening
+      with each of the consumers when your publisher sends messages
+      (send several).&nbsp; Make sure you <span style="font-style:
+        italic;">read carefully</span> the sections on the Work Queues
+      page concerning message durability, acknowledgment, and fair
+      dispatch.<br>
+      <br>
+    </font><font size="-1">For the Publish/Subscribe and Topics
+      examples, run multiple consumers (x &gt; 2) simultaneously in
+      separate windows (just as you did above in the HelloWorld example)
+      inside the MsgConsumer container.&nbsp; </font><font size="-1">For
+
+
+
+
+
+      the Publish/Subscribe example, notice what is happening with each
+      of the consumer windows when your publisher sends messages.&nbsp;
+      You are witnessing Publish/Subscribe messaging.</font><br>
+    <font size="-1"><br>
+    </font><font size="-1">For the Topics example, also </font><font
+      size="-1">run multiple consumers (x&gt;2) simultaneously in
+      separate windows</font><font size="-1"> (just as you did above in
+      the HelloWorld example).&nbsp; Observe what is happening in each
+      of the MsgConsumers when your publisher sends messages.<br>
+      <br>
+    </font><font size="-1">For the RPC example, </font><font size="-1">run
+
+
+
+
+
+
+      a single RPCServer in the MsgProducer container and </font><font
+      size="-1">run a single RPCClient consumer in the MsgConsumer
+      container</font><font size="-1">.&nbsp; Observe what is happening
+      the two containers when the RPCClient makes the call.&nbsp; Make
+      sure you read carefully the sections on the RPC page concerning
+      the Callback Queue and the Correlation ID.&nbsp; [If you get a
+      compiler error on corrId not being final, simply change line 32 in
+      the source code&nbsp; for RPCClient.java so that corrId is <span
+        style="font-style: italic;">final</span>:&nbsp; <span
+        style="font-weight: bold;">final</span> String corrId...]</font><br>
+    <small><span style="font-family: Times New Roman,Times,serif;"> </span></small><span
+      style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small><br>
+        </small></span></span><span style="font-weight: bold;">STEP 5</span>:<br>
+    <br>
+    <span style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small>Your Turn. <br>
+          <br>
+        </small></span></span><small><span style="font-family: Times New
+        Roman,Times,serif;">Using the Admin Console in a browser, create
+        a new exchange in RabbitMQ.&nbsp; Name your exchange "<span
+          style="font-style: italic;">youruserid</span>.exchange".&nbsp;
+        Make it a direct exchange and make it durable.&nbsp; Do not set
+        it for auto delete and do not make it internal.&nbsp; <br>
+        <br>
+        Next, using the Admin Console in a browser, create a new queue
+        in RabbitMQ.&nbsp; Name your new queue "<span style="font-style:
+          italic;">youruserid</span>.queue".&nbsp; Make the new queue
+        durable.&nbsp; </span></small><small><span style="font-family:
+        Times New Roman,Times,serif;">Do not set it for auto
+        delete.&nbsp; </span></small><br>
+    <small><span style="font-family: Times New Roman,Times,serif;"><br>
+        Next, </span></small><small><span style="font-family: Times New
+        Roman,Times,serif;">using the Admin Console in a browser, create
+        a new binding between your new queue and your new exchange in
+        RabbitMQ.&nbsp; You get to decide what binding key you want to
+        use.</span></small><small><span style="font-family: Times New
+        Roman,Times,serif;">&nbsp; Again, do not create the queue from
+        within the producer or consumer code (as the rabbit examples
+        do), but create the exchange and queue manually using the Admin
+        Console.&nbsp; <br>
+        <br>
+        Now, using whatever language binding you prefer, write a simple
+        message producer that will send a message to your new
+        queue.&nbsp; Write a simple message consumer that will read
+        messages from that queue.&nbsp; Write the producer program in
+        the MsgProducer container under a new subdirectory called
+        "/lab3".&nbsp; Write the consumer program in the MsgConsumer
+        container under a new subdirectory called "/lab3".<br>
+        <br>
+        Once you have your new changes all executing properly, you're
+        done.&nbsp; Submit as instructed below.</span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"></span></small><br>
+    <p style="font-family: Times New Roman,Times,serif;"><big><font
+          size="-1"><big><span style="font-weight: bold;">References</span>:</big></font></big></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">You
+may
+
+
+
+
+
+
+        find the following references helpful (in addition to the links
+        from previous labs):<br>
+        <a
+href="https://www.tecmint.com/useful-basic-commands-of-apt-get-and-apt-cache-for-package-management/"><br>
+        </a><a href="https://hub.docker.com/_/rabbitmq/">The docker page
+          for RabbitMQ<br>
+        </a><a href="https://www.rabbitmq.com/documentation.html">RabbitMQ
+
+
+
+
+
+
+          Documentation<br>
+        </a><a href="https://www.rabbitmq.com/devtools.html">RabbitMQ
+          Clients (Java, C++, Python, Ruby, Spring, etc.)</a></font><br>
+      <a
+href="https://www.rabbitmq.com/releases/rabbitmq-java-client/v3.4.1/rabbitmq-java-client-javadoc-3.4.1/allclasses-noframe.html"><font
+          size="-1">RabbitMQ Java Javadocs</font></a><font size="-1"><a
+href="https://www.tecmint.com/useful-basic-commands-of-apt-get-and-apt-cache-for-package-management/"><br>
+          Ubuntu package commands</a></font><br>
+    </p>
+    <a href="https://www.rabbitmq.com/devtools.html"><span
+        style="font-family: Times New Roman,Times,serif;"></span></a>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><span
+          style="font-weight: bold;">General Docker Tutorial Links</span><a
+          href="https://www.youtube.com/watch?v=YFl2mCHdv24"><br>
+        </a></font></p>
+    <small><a
+href="https://keraton.gitbooks.io/docker-cheat-sheet/content/dockercommand_essentials_md.html">Docker
+Cheat
+
+
+
+
+
+
+        Sheet</a></small><br>
+    <br>
+    <font size="+1"><b><br>
+        Submission</b></font>:<br>
+    <br>
+    For Labs:<br>
+    <br>
+    Each student should submit their Lab_N files and any supporting
+    materials to the repo.&nbsp; Use the folder named "lab_3" in
+    your&nbsp; repository (create it if necessary).&nbsp; Please include
+    a README text file that contains any instructions or additional
+    details for the TAs to assist with grading.<br>
+    <br>
+    Setup:<br>
+    <br>
+    We will be using the MPCS GitLab server for version control. The
+    department has published a tool to replace GitHub's Classroom. You
+    will login with your CNET ID at
+    https://course-repos.cs.uchicago.edu/. Here you will find classes
+    you're registered for that have repositories for that class. You
+    will click on the MPCS 51205 — Topics in Software Engineering course
+    for which the repository has been created for then that should take
+    you to the repository that's been created. You can click on your
+    CNETID (as that should have a hyperlink) to take you to the GitLab
+    repository page. That page will contain the instructions needed to
+    clone your repository. You will then perform standard git add, git
+    commit, git push for all homework assignments. This will mean you
+    will perform mkdir commands to create lab repos, which you will push
+    up to your source main branch.<br>
+    <br>
+    Please reach out if you have any questions or issues.<br>
+    <br>
+  </body>
+</html>

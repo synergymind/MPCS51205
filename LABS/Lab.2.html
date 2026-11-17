@@ -1,0 +1,3142 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;
+      charset=windows-1252">
+    <meta name="Author" content="JMS">
+    <meta name="GENERATOR" content="Mozilla/4.79 [en] (X11; U; Linux
+      2.4.18-4custom i686) [Netscape]">
+    <title>MPCS_51205-Lab_2</title>
+  </head>
+  <body style="color: rgb(0, 0, 0); background-color: rgb(255, 255,
+    255);" vlink="#ff0000" link="#0000ff" alink="#000088">
+    <font style="font-family: Times New Roman,Times,serif;" size="+2">Lab
+
+
+
+
+
+
+
+      2 Details for MPCS </font><font style="font-family: Times New
+      Roman,Times,serif;" size="+2">51205<br>
+    </font>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Each
+lab
+
+
+
+
+
+
+
+
+
+
+
+
+        will consist of a small problem and details of how to proceed.
+        Each lab is intended to give every student hands-on experience
+        with the core concepts and technologies covered during the
+        course.&nbsp; A student may concentrate, as a team member, on
+        one technology over another for the final project, but labs are
+        designed to give each and every student exposure to all the
+        technologies that come into play.&nbsp; You need to submit labs
+        to the TAs for grading--see submission instructions below.&nbsp;
+        Generally, unless otherwise specified, you will have one week to
+        complete each assigned lab.</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">See
+the
+
+
+
+
+
+
+
+
+
+
+
+
+        syllabus for information on grading.&nbsp; Turning in lab
+        assignments on time is required, without exception, and <span
+          style="font-style: italic;">all late deliveries will be
+          penalized</span>, <span style="font-style: italic;">regardless
+
+
+
+
+
+
+
+
+
+
+
+          of cause</span>.&nbsp; Submit your assignments to the
+        subversion repository according to the directions on the
+        syllabus page.</font> </p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">These
+
+
+
+
+
+
+
+
+
+
+        solutions are to be writing in <i>the</i> programming language
+        prescribed by the instructions.&nbsp; The reason for this is
+        simple.&nbsp; One cannot write a Java RMI solution in
+        Haskell.&nbsp; That said, you will not need to be "programming"
+        in Java (or Python or C++ or Go) in this lab, although you will
+        be following instructions to build Docker containers and you
+        will run executables in these languages in their respective
+        containers.&nbsp; The goal of this lab is to get you introduced
+        to the networking capabilities of Docker and introduced to Java
+        RMI (Problem 1) and Google gRPC (Problem 2), so that you can
+        distribute your auction system across multiple containers using
+        a synchronous metaphor.<br>
+      </font> </p>
+    <p style="font-family: Times New Roman,Times,serif;"><b><u>Lab 2</u></b>
+      &nbsp; <font color="#ff0000">Due:&nbsp; Tuesday, November 3, 2026<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><u>CHOOSE
+        BETWEEN DOING PROBLEM 1 <i>or</i> PROBLEM 2 (<b>DO NOT DO BOTH
+          (unless of course you really want to)</b>)<br>
+      </u></p>
+    <p style="font-family: Times New Roman,Times,serif;"><small><span
+          style="font-family: Times New Roman,Times,serif;">You are to
+          do <i>either</i> Problem 1 <i>or</i> Problem 2 (you will
+          only be graded on one problem).&nbsp; Your key decision point
+          on whether to opt for Problem 1 or Problem 2 will be whether
+          you are working in Java and would prefer the simplicity of
+          Java RMI network communication (Problem 1) <i>or</i> you wish
+          to explore Google gRPC (Problem 2).&nbsp; Note that you can
+          still do gRPC <i>using Java</i> as well (and instructions are
+          below)...so this is totally up to you.&nbsp; Everyone working
+          in a language other than Java will likely opt for Problem 2.<br>
+        </span></small></p>
+    <p style="font-family: Times New Roman,Times,serif;"><u>Problem
+        1:&nbsp; Java RMI and Docker Networking</u><font size="-1"> </font></p>
+    <small><span style="font-family: Times New Roman,Times,serif;"></span></small>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><big><span
+            style="font-weight: bold;">BACKGROUND</span>:</big><br>
+      </font></p>
+    <small><span style="font-family: Times New Roman,Times,serif;">Like
+        all programming problems, learning a new technology is not an
+        exercise in reading but rather an exercise in thinking and
+        typing.&nbsp; This lab is designed to give you&nbsp; hands-on
+        experience in some fundamental skills involved in Docker
+        containerization.&nbsp; You will generally find the References
+        section below helpful in addition to the required and
+        recommended reading.&nbsp; When we talk about "Docker", we are
+        talking specifically about the Stable Community Edition of
+        Docker, which is the version we will be using in this
+        class.&nbsp; The Stable Community Edition provides the basic
+        container engine and built-in orchestration, networking, and
+        security.<br>
+        <br>
+        In this lab, you will practice networking Docker containers and
+        synchronous "RPC" mechanisms for container-to-container
+        intercommunication.&nbsp; <br>
+      </span></small> <font size="-1"><span style="font-weight: bold;"></span></font>
+    <p style="font-family: Times New Roman,Times,serif;"><big><b><font
+            size="-1"><big>WHAT YOU NEED TO DO:<br>
+            </big></font></b></big></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><span
+          style="font-weight: bold;">STEP 1</span>: </font><br>
+    </p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">For
+this
+
+
+
+
+
+
+
+
+
+
+        lab problem, we are going to code a little container that will
+        accept a synchronous call over RMI to a server.&nbsp; That RMI
+        Server will echo back the string sent from the RMI Client, and
+        return it to the RMI Client running in a separate
+        container.&nbsp; <br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">
+        Create a working directory (perhaps something like
+        "~/mpcs51205/lab2".</font><font size="-1"><!--
+You
+will not need to run a script capture on this lab, as you will be
+submitting your two client and server docker containers. <br>
+--></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">First,
+make
+
+
+
+
+
+
+
+
+
+
+        sure docker is running either on your laptop (Option I from the
+        first lab) or in your VM (Option II from the first lab). <br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><span
+          style="font-weight: bold;">STEP 2</span>:</font></p>
+    <span style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small>Get Java RMI working in a
+          Docker Container (SERVER)</small><br>
+      </span><br>
+    </span><small><span style="font-family: Times New
+        Roman,Times,serif;"></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;">First, get
+        down an ubuntu container.&nbsp; Do this by executing the
+        following command (<span style="font-style: italic;">make sure
+          you understand</span> the meaning and significance of -p
+        8080:8080):<br>
+        <br>
+        docker run -di -P --hostname rmi_server --name RMIServer
+        ubuntu:14.04<br>
+        <br>
+        Once you have that container down (and running), obtain a bash
+        shell in that container by running docker exec into the
+        container (you should know how to do this by now).&nbsp; But to
+        remind ourselves one more time, that would be:<br>
+        <br>
+        docker exec -it RMIServer /bin/bash<br>
+        <br>
+        Once you are in the server container, install some software into
+        the container.&nbsp; </span></small><small><span
+        style="font-family: Times New Roman,Times,serif;">You will
+        update the ubuntu OS, then install the vi editor, the Java 1.7.x
+        JDK (via default-jdk), and some net-tools, which will allow you
+        to run network-related utilies including ifconfig.<br>
+        <br>
+        apt-get update<br>
+        apt-get install -y vim<br>
+        apt-get install -y default-jdk <br>
+        apt-get install -y net-tools<br>
+        apt-get install -y openssh-client<br>
+        apt-get install -y unzip<br>
+        apt-get install -y procps<br>
+        <br>
+        Inside your server container, create a subdirectory called
+        "/src/lab2/RMI" (explore "mkdir -p").&nbsp; Next, download
+        ~mark/pub/51205/src.labs/LAB.2/RMI.tgz into your container and
+        untar the contents into your RMI subdirectory.&nbsp; You can scp
+        it from the Linux cluster <i>directly into</i> your container
+        (as you have installed the openssh-client).&nbsp; <br>
+        <br>
+        Once untared, cat the README file and compile the java RMI
+        client and server.&nbsp; Then execute the RMI server in your
+        container's terminal window and then exec another bash terminal
+        into your same RMI server container and execute the client, to
+        make sure everything is running adequately so far.&nbsp; Refer
+        again to the README file on how to run the client and
+        server.&nbsp;&nbsp; You can just use "localhost" for the
+        &lt;server host address&gt; on the client command line, as for
+        this initial test you are running both the client and server
+        inside <i>the same</i> container, ie., RMIServer.<br>
+        <br>
+        This container will server as your "Server" container for the
+        synchronous exercise of this lab.&nbsp; </span></small><br>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><span
+          style="font-weight: bold;">STEP 3</span>:</font></p>
+    <span style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small>Get Java RMI working in a
+          separate Docker Container (CLIENT)</small><br>
+      </span><br>
+    </span><small><span style="font-family: Times New
+        Roman,Times,serif;"></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;">Now, create
+        another ubuntu container:<br>
+        <br>
+        docker run -di -P --hostname rmi_client --name RMIClient --link
+        RMIServer:rmi_server ubuntu:14.04<br>
+        <br>
+        Once you have that container down (and running), obtain a bash
+        shell into that container by running docker exec (you should
+        know how to do this by now).&nbsp; Once you are in the client
+        container, install some software into the container.&nbsp; </span></small><small><span
+        style="font-family: Times New Roman,Times,serif;">You will
+        update the ubuntu OS, then install the vi editor, the Java 1.7.x
+        JDK (via default-jdk), and some net-tools, which will allow you
+        to run network-related utilies including ifconfig.<br>
+        <br>
+        apt-get update<br>
+        apt-get install -y vim<br>
+        apt-get install -y default-jdk<br>
+        apt-get install -y net-tools<br>
+        apt-get install -y openssh-client<br>
+        apt-get install -y unzip<br>
+        apt-get install -y procps<br>
+        <br>
+        Inside your client container, create a subdirectory called
+        "/src/lab2/RMI".&nbsp; Next, download
+        ~mark/pub/51205/src.labs/LAB.2/RMI.tgz into your container and
+        untar the contents into your RMI subdirectory.&nbsp; You can scp
+        it from the Linux cluster <i>directly into</i> your container
+        (as you have installed the openssh-client).&nbsp; <br>
+        <br>
+        Once untared, cat the README file and <i>compile</i> the java
+        RMI client and server (javac *.java).&nbsp; <br>
+        <br>
+        Next, inside the RMIClient, run "cat /etc/hosts" and note the ip
+        address that Docker assigned for your "rmi_server" in the
+        container.&nbsp; This magic happened because when you ran your
+        client, you <i>linked</i> your RMIServer container to your
+        RMIClient container (via --link RMIServer:rmi_server) in the
+        docker run call above.&nbsp; This created an entry in /etc/hosts
+        mapping the IP Address of your RMIServer to the HOSTS alias
+        "rmi_server".&nbsp; Isn't that cool?<br>
+        <br>
+        Now, it's time to take this baby for a spin.&nbsp; Change to
+        your "/src/lab2/RMI" directory, and (with the RMIServer
+        container still running), execute the RMI Client:<br>
+        <br>
+        root@rmi_client:/src/lab2/RMI# java RMIClient rmi_server 12345
+        hi<br>
+        sending hi to rmi_server:12345<br>
+        <br>
+        root@rmi_server:/src/lab2/RMI# java RMIServer<br>
+        using address=rmi_server/172.17.0.7,port=12345<br>
+        hi<br>
+        <br>
+        You are done with Problem 1. Now with all your containers from
+        this problem running (start them again if you've stopped them),
+        execute the following from a prompt on your host system (NOT in
+        a container):
+        <pre>$ docker ps                      &gt;Problem1.out
+$ docker diff RMIServer         &gt;&gt;Problem1.out
+$ docker diff RMIClient         &gt;&gt;Problem1.out
+</pre>
+        You can shut things down now (Ctrl-C out of java RMIServer).Once
+        back at your host prompt, type:<br>
+        <br>
+        docker stop RMIServer<br>
+        [be patient...may take a few secs]<br>
+        <br>
+        docker stop RMIClient<br>
+        [be patient...may take a few secs]<br>
+        <br>
+        <!--
+Now create a tarball for submission of RMIServer and RMIClient for Problem 1:<br>
+    <br>
+$ docker commit RMIClient rmiclient:mpcs56600<br> 
+$ docker save -o RMIServer.tar rmiserver:mpcs56600<br>
+$ docker save -o RMIClient.tar rmiclient:mpcs56600<br>
+$ bzip2 RMIServer.tar<br>
+[be patient...may take a few secs]<br>
+$ bzip2 RMIClient.tar<br>
+[be patient...may take a few secs]<br>
+    <br>
+  </span></small><small><span style="font-family: Times New Roman,Times,serif;">You may of course use any zip utility (bzip2, gzip, zip, etc.).<br>
+    <br>
+Submit your two zipped images to your repository as per the instructions below.<br>
+    <br>
+-->You are done with this lab.&nbsp; You will submit Problem1.out for
+        credit.</span></small><br>
+    <p style="font-family: Times New Roman,Times,serif;"><u>Problem
+        2:&nbsp; gRPC and Docker Networking</u><font size="-1"> </font></p>
+    <small><span style="font-family: Times New Roman,Times,serif;"></span></small>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><big><span
+            style="font-weight: bold;">BACKGROUND</span>:</big><br>
+      </font></p>
+    <small><span style="font-family: Times New Roman,Times,serif;">Like
+        all programming problems, learning a new technology is not an
+        exercise in reading but rather an exercise in thinking and
+        typing.&nbsp; This lab is designed to give you&nbsp; hands-on
+        experience in some fundamental skills involved in Docker
+        containerization.&nbsp; You will generally find the References
+        section below helpful in addition to the required and
+        recommended reading.&nbsp; When we talk about "Docker", we are
+        talking specifically about the Stable Community Edition of
+        Docker, which is the version we will be using in this
+        class.&nbsp; The Stable Community Edition provides the basic
+        container engine and built-in orchestration, networking, and
+        security.<br>
+        <br>
+        In this lab, you will practice networking Docker
+        containers.&nbsp; <br>
+      </span></small> <font size="-1"><span style="font-weight: bold;"></span></font>
+    <p style="font-family: Times New Roman,Times,serif;"><big><b><font
+            size="-1"><big>WHAT YOU NEED TO DO:<br>
+            </big></font></b></big></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">There
+
+
+
+
+
+
+
+
+
+
+        are two shell scripts that you will use to document your work
+        with this lab (that utilize the script command), one if you're
+        working on <a href="runscript.linux.sh">linux</a>, and the
+        other if you're working on <a href="runscript.mac.sh">MacOS</a>.&nbsp;
+Contact
+
+
+
+
+
+
+
+
+
+
+        the TA if you're working on Windows.&nbsp; </font><font
+        size="-1">We will be looking to see if you have successfully run
+        all the commands required in the lab.&nbsp; Note that you may
+        "play around" further with options and other commands, even as
+        you work through the lab.&nbsp; Therefore if your script output
+        shows additional commands etc., that's perfectly fine (in fact
+        it's great!).&nbsp; We will simply be grading the subset of
+        required commands that you are to follow when working through
+        the this lab and subsequent labs, and will ignore any output
+        that we see that is not part of the lab requirements.</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Create
+a
+
+
+
+
+
+
+
+
+
+
+        working directory (perhaps something like "~/mpcs51205/lab2" and
+        in that directory type either runscript.linux.sh or
+        runscript.mac.sh.&nbsp; That will launch a new shell (in your
+        same window), but all&nbsp; your commands and output will be
+        recorded in a file with an extension of "*.out".&nbsp; Once you
+        are finished with Step 3 of this lab, simply type "exit" or
+        press "^d" and you will exit the subshell and your activity will
+        be saved in the script output.&nbsp; Your script output will be
+        saved in a file with your login id and a date-time stamp.&nbsp;
+        The filename will look something like
+        "mark.Tue.Sep.19.17-59-26.CDT.2019.out".&nbsp; Your userid and
+        time stamp will of course be different.&nbsp; This is the file
+        you will submit for grading per the submission instructions
+        below.</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">
+        We will be working with containers that contains Google Protocol
+        Buffers and example gRPC code (from google) for the following
+        language bindings:<br>
+        <br>
+        java [<a href="https://grpc.io/docs/tutorials/basic/java.html">https://grpc.io/docs/tutorials/basic/java.html</a>]<br>
+        C++ [<a
+href="https://grpc.io/docs/tutorials/basic/c.html#generating-client-and-server-code">https://grpc.io/docs/tutorials/basic/c.html#generating-client-and-server-code</a>]<br>
+        go [<a
+href="https://grpc.io/docs/quickstart/go.html#install-protocol-buffers-v3">https://grpc.io/docs/quickstart/go.html#install-protocol-buffers-v3</a>]<br>
+        python [<a
+          href="https://grpc.io/docs/tutorials/basic/python.html">https://grpc.io/docs/tutorials/basic/python.html</a>]<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">
+        There is a quickstart guide for each language (implementing
+        simple HelloWorld):</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">gRPC
+
+
+
+
+
+
+
+
+
+
+        Guides:&nbsp; <a href="https://grpc.io/docs/guides/">https://grpc.io/docs/guides/</a><br>
+        gRPC Tutorials:&nbsp; <a href="https://grpc.io/docs/tutorials/">https://grpc.io/docs/tutorials/<br>
+        </a>C++:&nbsp; <a
+          href="https://grpc.io/docs/quickstart/cpp.html">https://grpc.io/docs/quickstart/cpp.html</a><br>
+        Java:&nbsp; <a href="https://grpc.io/docs/quickstart/java.html">https://grpc.io/docs/quickstart/java.html</a><br>
+        Go:&nbsp; <a href="https://grpc.io/docs/quickstart/go.html">https://grpc.io/docs/quickstart/go.html</a><br>
+        Python:&nbsp; <a
+          href="https://grpc.io/docs/quickstart/python.html">https://grpc.io/docs/quickstart/python.html</a></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">These
+
+
+
+
+
+
+
+
+
+
+        are the simplest introductions to the various language bindings.</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><small><span
+          style="font-weight: bold;">STEP 1</span></small><small>:<br>
+      </small></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Download
+
+
+
+
+
+
+
+
+
+
+
+        the file :&nbsp; grpc-lab2.tar.bz2. from
+        /home/mark/pub/51205/src.labs/LAB.2&nbsp; It's over a gig in
+        size, so it will take a minute or so.<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">bunzip2
+
+
+
+
+
+
+
+
+
+
+        it.&nbsp; (install bunzip2 if you need to).<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Load
+
+
+
+
+
+
+
+
+
+
+        it into docker:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">$
+        docker load &lt; grpc-lab2.tar <br>
+        <tt>18f9b4e2e1bc: Loading layer
+          [==================================================&gt;]&nbsp;
+          129.3MB/129.3MB</tt><tt><br>
+        </tt><tt>a021c4ee5b3a: Loading layer
+          [==================================================&gt;]&nbsp;
+          281.1MB/281.1MB</tt><tt><br>
+        </tt><tt>7656f8e9f9d5: Loading layer
+          [==================================================&gt;]&nbsp;
+          182.3MB/182.3MB</tt><tt><br>
+        </tt><tt>ecb7d1e409dd: Loading layer
+          [==================================================&gt;]&nbsp;
+          664.6MB/664.6MB</tt><tt><br>
+        </tt><tt>cb19c93edb8e: Loading layer
+          [==================================================&gt;]&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+          208MB/208MB</tt><tt><br>
+        </tt><tt>f6ba9235b10c: Loading layer
+          [==================================================&gt;]&nbsp;
+          1.886GB/1.886GB</tt><tt><br>
+        </tt><tt>680f7dcf7877: Loading layer
+          [==================================================&gt;]&nbsp;
+          691.2kB/691.2kB</tt><tt><br>
+        </tt><tt>bcab93a01dd1: Loading layer
+          [==================================================&gt;]&nbsp;
+          234.4MB/234.4MB</tt><tt><br>
+        </tt><tt>Loaded image: grpc-lab2:mpcs51205</tt></font></p>
+    <font size="-1"><tt> </tt></font>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Now,
+
+
+
+
+
+
+
+
+
+
+        run:<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">$
+        docker images<br>
+      </font><font size="-1"><tt>REPOSITORY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          TAG&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          IMAGE
+          ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          SIZE</tt><tt><br>
+          grpc-lab2</tt><tt>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          mpcs51205
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          3c542336c4e6 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 16 hours
+          ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.53GB</tt></font><font
+        size="-1"><br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Now,
+
+
+
+
+
+
+
+
+
+
+        run a new docker image to create a GRPC_SERVER container (we are
+        leveraging a docker image from another class but it will work):<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">docker
+
+
+
+
+
+
+
+
+
+
+        run -it --hostname grpc_server --name GRPC_SERVER
+        grpc-lab2:mpcs51205 /bin/bash</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">this
+
+
+
+
+
+
+
+
+
+
+        creates a new container based on grpc-lab2:mpcs51205 called
+        GRPC_SERVER:<br>
+        <br>
+        <tt>$ docker ps<br>
+          CONTAINER ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          IMAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          COMMAND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          PORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          NAMES<br>
+          7e298f1b6e59&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          grpc-lab2:mpcs51205 &nbsp;
+          "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          Less than a second ago&nbsp;&nbsp; Up 3
+          seconds&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          GRPC_SERVER<br>
+          <br>
+        </tt>Now, exec into your new GRPC_SERVER container:<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">$
+        docker exec -it GRPC_SERVER /bin/bash<br>
+      </font><font size="-1"><tt>root@grpc_server:/# </tt></font><font
+        size="-1"><br>
+        <br>
+        Run the C++ server:<br>
+        cd to </font><font size="-1"><font size="-1">/src/grpc/examples/cpp/helloworld</font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">root@grpc_server:/src/grpc/examples/cpp/helloworld#
+
+
+
+
+
+
+
+
+
+
+        ./greeter_server<br>
+        Server listening on 172.17.0.3:50051<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Now,
+
+
+
+
+
+
+
+
+
+
+
+        confirm that the server is functioning by opening another
+        terminal window, exec'ing into the same container (as above),
+        and changing into the same helloworld cpp directory, and
+        executing:<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">root@grpc_server:/src/grpc/examples/cpp/helloworld#
+
+
+
+
+
+
+
+
+
+
+        ./greeter_client<br>
+        Greeter received: Hello world<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">You
+
+
+
+
+
+
+
+
+
+
+        are looking to see Hello world printed out.&nbsp; Great.<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">
+        Now, run a python test:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">$
+        docker run -it --hostname grpc_client_python --name
+        GRPC_CLIENT_PYTHON --link GRPC_SERVER:grpc_server
+        grpc-lab2:mpcs51205 /bin/bash<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">If
+
+
+
+
+
+
+
+
+
+
+        you open another terminal window on your host, and run docker
+        ps, you should see your new python container:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">$
+        docker ps<br>
+      </font><font size="-1"><tt>CONTAINER
+          ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          IMAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          COMMAND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          PORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          NAMES</tt><tt><br>
+        </tt><tt>7f07214e3521&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          grpc-lab2:mpcs51205 &nbsp;
+          "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 41
+          seconds ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Up 52
+          seconds&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          GRPC_CLIENT_PYTHON</tt><tt><br>
+        </tt><tt>7e298f1b6e59&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          grpc-lab2:mpcs51205 &nbsp;
+          "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10
+          minutes ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Up 10
+          minutes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          GRPC_SERVER</tt><tt><br>
+        </tt></font><font size="-1"><br>
+        Now, execute the following cat command:<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">root@grpc_client_python:/#
+
+
+
+
+
+
+
+
+
+
+        cat /etc/hosts<br>
+      </font><font size="-1"><tt>127.0.0.1&nbsp;&nbsp;&nbsp; localhost</tt><tt><br>
+        </tt><tt>::1&nbsp;&nbsp;&nbsp; localhost ip6-localhost
+          ip6-loopback</tt><tt><br>
+        </tt><tt>fe00::0&nbsp;&nbsp;&nbsp; ip6-localnet</tt><tt><br>
+        </tt><tt>ff00::0&nbsp;&nbsp;&nbsp; ip6-mcastprefix</tt><tt><br>
+        </tt><tt>ff02::1&nbsp;&nbsp;&nbsp; ip6-allnodes</tt><tt><br>
+        </tt><tt>ff02::2&nbsp;&nbsp;&nbsp; ip6-allrouters</tt><tt><br>
+        </tt><tt>172.17.0.2&nbsp;&nbsp;&nbsp; grpc_server grpc_server
+          GRPC_SERVER</tt><tt><br>
+        </tt><tt>172.17.0.3&nbsp;&nbsp;&nbsp; grpc_client_python</tt></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Notice
+
+
+
+
+
+
+
+
+
+
+
+        that docker has kindly added a HOSTS link to your GRPC_SERVER
+        which is aliased as "grpc_server".&nbsp; This is nice and very
+        kind of Docker, and the magic happened because you added
+        the&nbsp; <b>--link GRPC_SERVER:grpc_server</b> line in your
+        docker run command for your GRPC_CLIENT_PYTHON above.<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Well,
+
+
+
+
+
+
+
+
+
+
+        let's see if this stuff works.&nbsp; Execute:</font><br>
+      <br>
+      <font size="-1"><font size="-1">root@grpc_client_python:</font><font
+          size="-1"><font size="-1">/src/grpc/examples/python/helloworld</font>#
+          python greeter_client.py<br>
+          Greeter client received: Hello you<br>
+        </font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">root@grpc_client_python:/#<br>
+        <br>
+        $ docker ps<br>
+      </font><font size="-1"><tt>CONTAINER
+          ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          IMAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          COMMAND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          PORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          NAMES</tt><tt><br>
+        </tt><tt>5098b903220e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          grpc-lab2:mpcs51205 &nbsp;&nbsp;&nbsp;&nbsp;
+          "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8
+          minutes ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Up 10
+          minutes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          GRPC_CLIENT_PYTHON</tt><tt><br>
+        </tt><tt>a0cad78cfbf2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          grpc-lab2:mpcs51205 &nbsp;&nbsp;&nbsp;&nbsp;
+          "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          About an hour ago&nbsp;&nbsp; Up About an
+          hour&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          GRPC_CLIENT_GO</tt><tt><br>
+        </tt><tt>3a597e796815&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          grpc-lab2:mpcs51205 &nbsp;&nbsp;&nbsp;&nbsp;
+          "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          About an hour ago&nbsp;&nbsp; Up About an
+          hour&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          GRPC_CLIENT_JAVA</tt><tt><br>
+        </tt><tt>c0fe154dbc9a&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          grpc-lab2:mpcs51205 &nbsp;&nbsp;&nbsp;&nbsp;
+          "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2
+          hours ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Up 2
+          hours&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          GRPC_SERVER</tt><tt><br>
+        </tt></font><font size="-1"><br>
+        In your python container you just ran, cd to the
+        /src/grpc/examples/python/helloworld directory, and then
+        execute:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">root@grpc_client_python:/src/grpc/examples/python/helloworld#
+
+
+
+
+
+
+
+
+
+
+        python greeter_client.py <br>
+      </font><font size="-1"><tt>Greeter client received: Hello you</tt><tt><br>
+        </tt></font><font size="-1"><br>
+        This is wonderful!&nbsp; The python client (you should of course
+        examine the python client code) has done this to communicate to
+        the GRPC_SERVER in the other container:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><br>
+      </font><font size="-1"><tt>&nbsp; channel =
+          grpc.insecure_channel('grpc_server:50051')</tt><tt><br>
+        </tt><tt>&nbsp; stub = helloworld_pb2_grpc.GreeterStub(channel)</tt><tt><br>
+        </tt><tt>&nbsp; response =
+          stub.SayHello(helloworld_pb2.HelloRequest(name='you'))</tt><tt><br>
+        </tt><tt>&nbsp; print("Greeter client received: " +
+          response.message)</tt></font><font size="-1"><br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">It
+
+
+
+
+
+
+
+
+
+
+        has created a channel to the grpc_server listening on port
+        50051, and has created an RPC stub, and has called the server's
+        SayHello function (remember the server is written in C++)
+        passing it the parameter "you".&nbsp; The response back from the
+        server is:&nbsp; "Hello you".&nbsp; You can of course change the
+        name from the anonymous "you" to your own name.</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Ok,
+
+
+
+
+
+
+
+
+
+
+
+        so far, so good.&nbsp; Now let's run a Go container.&nbsp;
+        First, exit out of the GRPC_CLIENT_PYTHON container.&nbsp; Then,
+        execute:<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">docker
+
+
+
+
+
+
+
+
+
+
+        run -it --hostname grpc_client_go --name GRPC_CLIENT_GO --link
+        GRPC_SERVER:grpc_server grpc-lab2:mpcs51205 /bin/bash<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><i>et
+
+
+
+
+
+
+
+
+
+
+          voila</i>!&nbsp; There you are in your brand new
+        GRPC_CLIENT_GO container:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">root@grpc_client_go:/#</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">From
+
+
+
+
+
+
+
+
+
+
+        that other free terminal, execute:<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">$
+        docker ps<br>
+      </font><font size="-1"><tt>CONTAINER
+          ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          IMAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          COMMAND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          PORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          NAMES</tt><tt><br>
+        </tt><tt>cb1c098fbbf9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          grpc-lab2:mpcs51205 &nbsp;
+          "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 54
+          seconds ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Up About a
+          minute&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          GRPC_CLIENT_GO</tt><tt><br>
+        </tt><tt>7e298f1b6e59&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          grpc-lab2:mpcs51205 &nbsp;
+          "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 25
+          minutes ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Up 25
+          minutes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          GRPC_SERVER</tt></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Whoa
+
+
+
+
+
+
+
+
+
+
+
+        Nellie!&nbsp; What happened to the Python container????&nbsp;
+        Well, when you exited it's bash shell, the container
+        stopped.&nbsp; No matter, it's still there:<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">$
+        docker ps -a<br>
+      </font><font size="-1"><tt>CONTAINER
+          ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          IMAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          COMMAND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          PORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          NAMES</tt><tt><br>
+        </tt><tt>cb1c098fbbf9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          grpc-lab2:mpcs51205 &nbsp;
+          "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2
+          minutes ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Up 2
+          minutes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          GRPC_CLIENT_GO</tt><tt><br>
+        </tt><tt>7f07214e3521&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          grpc-lab2:mpcs51205 &nbsp;
+          "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 16
+          minutes ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Exited (0) 2 minutes
+          ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          GRPC_CLIENT_PYTHON</tt><tt><br>
+        </tt><tt>7e298f1b6e59&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          grpc-lab2:mpcs51205 &nbsp;
+          "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 26
+          minutes ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Up 26
+          minutes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          GRPC_SERVER</tt><tt><br>
+        </tt></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">If
+
+
+
+
+
+
+
+
+
+
+        you ever want to start it again, all you have to do is execute:<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">docker
+
+
+
+
+
+
+
+
+
+
+        start GRPC_CLIENT_PYTHON in a terminal window and you're back in
+        it.<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">$
+        docker start GRPC_CLIENT_PYTHON<br>
+      </font><font size="-1"><tt>GRPC_CLIENT_PYTHON</tt><tt><br>
+        </tt></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">From
+
+
+
+
+
+
+
+
+
+
+        another window:<br>
+        $ docker ps <br>
+      </font><font size="-1"><tt>CONTAINER
+          ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          IMAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          COMMAND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          PORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+          NAMES</tt><tt><br>
+        </tt><tt>cb1c098fbbf9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          grpc-lab2:mpcs51205 &nbsp;
+          "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3
+          minutes ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Up 3
+          minutes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          GRPC_CLIENT_GO</tt><tt><br>
+        </tt><tt>7f07214e3521&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          grpc-lab2:mpcs51205 &nbsp;
+          "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 18
+          minutes ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Up 6
+          seconds&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          GRPC_CLIENT_PYTHON</tt><tt><br>
+        </tt><tt>7e298f1b6e59&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          grpc-lab2:mpcs51205 &nbsp;
+          "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 27
+          minutes ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Up 28
+          minutes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          GRPC_SERVER</tt></font><font size="-1"><br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Then,
+
+
+
+
+
+
+
+
+
+
+        in another free terminal window you can just <i>exec</i> into
+        the running python container:<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">$
+        docker exec -it GRPC_CLIENT_PYTHON /bin/bash<br>
+      </font><font size="-1"><tt>root@grpc_client_python:/# </tt></font><font
+        size="-1"><br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Ok,
+
+
+
+
+
+
+
+
+
+
+
+        back to our Go container.&nbsp; Get back into the window where
+        you executed the docker run command for GRPC_CLIENT_GO.&nbsp; It
+        will have the prompt "root@grpc_client_go:/#".<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Now,
+
+
+
+
+
+
+
+
+
+
+        let's execute the Go client against our C++ server.&nbsp; First,
+        in the Go container, type once more:<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">root@grpc_client_go:/#
+
+
+
+
+
+
+
+
+
+
+        cat /etc/hosts<br>
+      </font><font size="-1"><tt>127.0.0.1&nbsp;&nbsp;&nbsp; localhost</tt><tt><br>
+        </tt><tt>::1&nbsp;&nbsp;&nbsp; localhost ip6-localhost
+          ip6-loopback</tt><tt><br>
+        </tt><tt>fe00::0&nbsp;&nbsp;&nbsp; ip6-localnet</tt><tt><br>
+        </tt><tt>ff00::0&nbsp;&nbsp;&nbsp; ip6-mcastprefix</tt><tt><br>
+        </tt><tt>ff02::1&nbsp;&nbsp;&nbsp; ip6-allnodes</tt><tt><br>
+        </tt><tt>ff02::2&nbsp;&nbsp;&nbsp; ip6-allrouters</tt><tt><br>
+        </tt><tt>172.17.0.2&nbsp;&nbsp;&nbsp; grpc_server grpc_server
+          GRPC_SERVER</tt><tt><br>
+        </tt><tt>172.17.0.3&nbsp;&nbsp;&nbsp; grpc_client_go</tt></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">There
+
+
+
+
+
+
+
+
+
+
+        she is!&nbsp; grpc_server again!&nbsp; Excellent.&nbsp; <br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Now,
+
+
+
+
+
+
+
+
+
+
+        let's run the Go client against the C++ server:<br>
+        <br>
+        Make sure we have our GOPATH set appropriately (should be...):<br>
+        env |grep go<br>
+        See:<br>
+PATH=/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin<br>
+        GOPATH=/root/go<br>
+        <br>
+        If you see your PATH includes /usr/local/go/bin and your GOPATH
+        set, you're "good to go".<br>
+        <br>
+        cd to the go source directory:<br>
+        cd ~/go/src<br>
+        <br>
+        Now, do an "ls" on that directory, and you'll see several
+        directories, including google.golang.org/<br>
+        <br>
+        That directory contains the go language examples. <br>
+        <br>
+        Execute:<br>
+        ls google.golang.org/grpc/examples/helloworld<br>
+        <br>
+        Here, you'll see the greeter code.&nbsp; There's a little change
+        we need to make.&nbsp; cd to the
+        google.golang.org/grpc/examples/helloworld/greeter_client
+        directory:<br>
+        <br>
+      </font><font size="-1"><font size="-1"><font size="-1"><font
+              size="-1">root@grpc_client_go:~/go/src $ </font>cd
+            google.golang.org/grpc/examples/helloworld/greeter_client<br>
+          </font></font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Then,
+
+
+
+
+
+
+
+
+
+
+        change this code in main.go:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">const
+
+
+
+
+
+
+
+
+
+
+        (<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        address&nbsp;&nbsp;&nbsp;&nbsp; = "localhost:50051"<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; defaultName = "world"<br>
+        )<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><i>to
+
+
+
+
+
+
+
+
+
+
+          this</i>:<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">const
+
+
+
+
+
+
+
+
+
+
+        (<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        /*address&nbsp;&nbsp;&nbsp;&nbsp; = "localhost:50051"*/<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        address&nbsp;&nbsp;&nbsp;&nbsp; = "grpc_server:50051"<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; defaultName = "world"<br>
+        )<br>
+        <br>
+        This way our go program will be hitting our C++ server in the
+        other container.<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Now
+
+
+
+
+
+
+
+
+
+
+        build the go client:<br>
+        go generate
+        google.golang.org/grpc/examples/helloworld/greeter_client<br>
+        <br>
+        If all goes well (this is Unix of course), you'll see
+        nothing.&nbsp; That's good news.<br>
+        <br>
+        Now, you can execute the go client:</font><br>
+      <br>
+      <font size="-1">root@grpc_client_go:~/go/src/google.golang.org/grpc/examples/helloworld/greeter_client#
+
+
+
+
+
+
+
+
+
+
+        go run main.go<br>
+        2018/07/23 14:14:52 Greeting: Hello world<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Hot
+
+
+
+
+
+
+
+
+
+
+        diggity dog.&nbsp; It worked.&nbsp; Pro.<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Now,
+
+
+
+
+
+
+
+
+
+
+        we'll run a Java client.&nbsp; Exit out of your Go container,
+        and then execute:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1"> docker run -it --hostname grpc_client_java --name
+          GRPC_CLIENT_JAVA --link GRPC_SERVER:grpc_server
+          grpc-lab2:mpcs51205 /bin/bash<br>
+        </font></font><font size="-1"><font size="-1"><tt>root@grpc_client_java:/#
+
+
+
+
+
+
+
+
+
+
+          </tt><tt><br>
+          </tt></font></font><font size="-1"><font size="-1"><br>
+          root@grpc_client_java:/# cat /etc/hosts<br>
+        </font></font><font size="-1"><font size="-1"><tt>127.0.0.1&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+            localhost</tt><tt><br>
+          </tt><tt>::1&nbsp;&nbsp;&nbsp; localhost ip6-localhost
+            ip6-loopback</tt><tt><br>
+          </tt><tt>fe00::0&nbsp;&nbsp;&nbsp; ip6-localnet</tt><tt><br>
+          </tt><tt>ff00::0&nbsp;&nbsp;&nbsp; ip6-mcastprefix</tt><tt><br>
+          </tt><tt>ff02::1&nbsp;&nbsp;&nbsp; ip6-allnodes</tt><tt><br>
+          </tt><tt>ff02::2&nbsp;&nbsp;&nbsp; ip6-allrouters</tt><tt><br>
+          </tt><tt>172.17.0.2&nbsp;&nbsp;&nbsp; grpc_server grpc_server
+            GRPC_SERVER</tt><tt><br>
+          </tt><tt>172.17.0.3&nbsp;&nbsp;&nbsp; grpc_client_java</tt></font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">Note the actual IP address for the grpc_server
+          (above it is "172.17.0.2").&nbsp; You'll need that in a
+          minute.<br>
+          <br>
+          Now, we've got to go into the Java client and modify the
+          server address (similar to what we did in our Go example
+          above).&nbsp; <br>
+        </font></font></p>
+    <span style="caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);
+      font-family: &quot;Times New Roman&quot;, Times, serif; font-size:
+      small; font-style: normal; font-variant-caps: normal; font-weight:
+      normal; letter-spacing: normal; orphans: auto; text-align: start;
+      text-indent: 0px; text-transform: none; white-space: normal;
+      widows: auto; word-spacing: 0px; -webkit-text-size-adjust: auto;
+      -webkit-text-stroke-width: 0px; background-color: rgb(255, 255,
+      255); text-decoration: none; display: inline !important; float:
+      none;">First cd to ~/java/grpc-java/examples and then cd to the
+      src/main/java/io/grpc/examples/helloworld/ directory.</span><font
+      size="-1"><font size="-1"> </font></font>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">Edit the file:&nbsp; HelloWorldClient.java<br>
+        </font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">In the main() method, we need to update the server
+          IP address with the IP address for the grpc_server from the
+          /etc/hosts file, so modify this line:<br>
+        </font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">&nbsp;&nbsp;&nbsp; HelloWorldClient client = new
+          HelloWorldClient("localhost", 50051);<br>
+          <br>
+          <i>to this</i>:<br>
+        </font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">&nbsp;&nbsp;&nbsp; //HelloWorldClient client = new
+          HelloWorldClient("localhost", 50051);<br>
+          &nbsp;&nbsp;&nbsp; HelloWorldClient client = new
+          HelloWorldClient("172.17.0.2", 50051);<br>
+        </font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">Of course we're assuming your grpc_server address is
+          "172.17.0.2".&nbsp; You'll of course change it to whatever
+          YOUR server's IP address is.<br>
+        </font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">Now, cd back into your ~/java/grpc-java/examples
+          directory, and rebuild the Java code:<br>
+        </font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">Now, rebuild java client:<br>
+          ./gradlew installDist<br>
+        </font></font><font size="-1"><font size="-1"><tt>Starting a
+            Gradle Daemon, 1 incompatible and 1 stopped Daemons could
+            not be reused, use --status for details</tt><tt><br>
+          </tt><tt><br>
+          </tt><tt>BUILD SUCCESSFUL in 12s</tt><tt><br>
+          </tt><tt>12 actionable tasks: 12 up-to-date</tt></font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">You're looking for that happy green <b><font
+              color="#009900">BUILD SUCCESSFUL</font></b> line.</font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">Now, run the java client:<br>
+          ./build/install/examples/bin/hello-world-client<br>
+          <br>
+          You should see something like this output from the java
+          client:</font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">root@grpc_client_java:~/java/grpc-java/examples#
+          ./build/install/examples/bin/hello-world-client<br>
+        </font></font><font size="-1"><font size="-1"><tt>Jul 23, 2018
+            2:40:01 PM io.grpc.examples.helloworld.HelloWorldClient
+            greet</tt><tt><br>
+          </tt><tt>INFO: Will try to greet world ...</tt><tt><br>
+          </tt><tt>Jul 23, 2018 2:40:02 PM
+            io.grpc.examples.helloworld.HelloWorldClient greet</tt><tt><br>
+          </tt><tt>INFO: Greeting: Hello world</tt><tt><br>
+          </tt></font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">Whatever the date, it's that last "INFO" line that's
+          important.&nbsp; That's the greeting from the C++ server.<br>
+          <br>
+          Feel free to examine the Java source code that is generated in
+          the following files and directories:<br>
+          ./src/main/java/io/grpc/examples/helloworld/*<br>
+./build/generated/source/proto/main/grpc/io/grpc/examples/helloworld/GreeterGrpc.java<br>
+          <br>
+          This latter file is the java stub genereated by the protocol
+          compiler.<br>
+        </font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">Now </font></font><font size="-1"><font size="-1"><font
+            size="-1"><font size="-1">with all your containers from this
+              problem running</font></font> (start them again if you've
+          stopped them), execute the following from a prompt on your
+          host system (NOT in a container):<br>
+        </font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">$ docker ps &gt;Problem2.out</font></font><br>
+      <font size="-1"><font size="-1"><font size="-1"><font size="-1">$
+              docker diff GRPC_SERVER &gt;&gt;Problem2.out</font></font></font></font><font
+        size="-1"><font size="-1"><br>
+          $ docker diff GRPC_CLIENT_PYTHON&gt;&gt;Problem2.out<br>
+        </font></font><font size="-1"><font size="-1">$ docker diff
+          GRPC_CLIENT_JAVA &gt;&gt;Problem2.out</font></font><font
+        size="-1"><font size="-1"><br>
+          $ docker diff GRPC_CLIENT_GO &gt;&gt;Problem2.out</font></font></p>
+    <font size="-1"><font size="-1"> Then, submit Problem2.out as
+        described below under <b>Submitting</b>. </font></font>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1"> </font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">Exit out of your Java container.&nbsp; <br>
+        </font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1">You can now stop your C++ server and exit out of the
+          GRPC_SERVER container.<br>
+        </font></font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1"> Ensure you have your terminal logs and <b>submit</b>
+          these. You may need to type exit to stop one or more runscript
+          sessions. </font></font></p>
+    <font size="-1"><font size="-1">
+        <p style="font-family: Times New Roman,Times,serif;"><font
+            size="-1"><font size="-1"><b>REMEMBER</b>:&nbsp; At any
+              point now you can simply start and stop your containers,
+              so, for example, if you wanted to restart your Java
+              container, and then stop it again,&nbsp; you'd just
+              execute:<br>
+            </font></font></p>
+        <p style="font-family: Times New Roman,Times,serif;"><font
+            size="-1"><font size="-1">$ docker ps <br>
+            </font></font><font size="-1"><font size="-1"><tt>CONTAINER
+                ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                IMAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+                COMMAND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+                CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+                STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+                PORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+                NAMES</tt><tt><br>
+              </tt><tt>7f07214e3521&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                grpc-lab2:mpcs51205 &nbsp;
+                "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                About an hour ago&nbsp;&nbsp; Up 45
+                minutes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                GRPC_CLIENT_PYTHON</tt><tt><br>
+              </tt><tt>7e298f1b6e59&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                grpc-lab2:mpcs51205 &nbsp;
+                "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                About an hour ago&nbsp;&nbsp; Up About an
+                hour&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                GRPC_SERVER</tt></font></font><font size="-1"><font
+              size="-1"><br>
+            </font></font></p>
+        <p style="font-family: Times New Roman,Times,serif;"><font
+            size="-1"><font size="-1">$ <b>docker start</b>
+              GRPC_CLIENT_JAVA<br>
+            </font></font><font size="-1"><font size="-1"><tt>GRPC_CLIENT_JAVA</tt></font></font><font
+            size="-1"><font size="-1"><br>
+            </font></font></p>
+        <p style="font-family: Times New Roman,Times,serif;"><font
+            size="-1"><font size="-1">$ docker ps<br>
+            </font></font><font size="-1"><font size="-1"><tt>CONTAINER
+                ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                IMAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+                COMMAND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+                CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+                STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+                PORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+                NAMES</tt><tt><br>
+              </tt><tt>61095b85983b&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                grpc-lab2:mpcs51205 &nbsp;
+                "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                21 minutes ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Up 5
+                seconds&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                GRPC_CLIENT_JAVA</tt><tt><br>
+              </tt><tt>7f07214e3521&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                grpc-lab2:mpcs51205 &nbsp;
+                "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                About an hour ago&nbsp;&nbsp; Up About an
+                hour&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                GRPC_CLIENT_PYTHON</tt><tt><br>
+              </tt><tt>7e298f1b6e59&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                grpc-lab2:mpcs51205 &nbsp;
+                "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                About an hour ago&nbsp;&nbsp; Up About an
+                hour&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                GRPC_SERVER</tt></font></font><font size="-1"><font
+              size="-1"><br>
+            </font></font></p>
+        <p style="font-family: Times New Roman,Times,serif;"><font
+            size="-1"><font size="-1">$ <b>docker stop</b>
+              GRPC_CLIENT_JAVA<br>
+            </font></font><font size="-1"><font size="-1"><tt>GRPC_CLIENT_JAVA</tt></font></font><font
+            size="-1"><font size="-1"><br>
+            </font></font></p>
+        <p style="font-family: Times New Roman,Times,serif;"><font
+            size="-1"><font size="-1">$ docker ps<br>
+            </font></font><font size="-1"><font size="-1"><tt>CONTAINER
+                ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                IMAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+                COMMAND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+                CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+                STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+                PORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+                NAMES</tt><tt><br>
+              </tt><tt>7f07214e3521&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                grpc-lab2:mpcs51205 &nbsp;
+                "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                About an hour ago&nbsp;&nbsp; Up About an
+                hour&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                GRPC_CLIENT_PYTHON</tt><tt><br>
+              </tt><tt>7e298f1b6e59&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                grpc-lab2:mpcs51205 &nbsp;
+                "/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                About an hour ago&nbsp;&nbsp; Up About an
+                hour&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                GRPC_SERVER</tt></font></font></p>
+        <p style="font-family: Times New Roman,Times,serif;"><font
+            size="-1"><font size="-1">Same with any of the other
+              containers.</font></font></p>
+        <p style="font-family: Times New Roman,Times,serif;"><font
+            size="-1"><font size="-1">This concludes Problem 2.&nbsp;
+              You are done with this lab.</font></font><br>
+        </p>
+      </font></font><br>
+    <font size="-1"><font size="-1"><font size="-1"><font size="-1"><font
+              size="-1"><small><span style="font-family: Times New
+                  Roman,Times,serif;"><font color="#cc33cc"><span
+                      style="font-weight: bold;"></span></font></span></small><big><font
+                  size="-1"><big><span style="font-weight: bold;"></span></big></font></big></font></font></font><big><font
+            size="-1"><big><span style="font-weight: bold;">References</span>:</big></font></big>
+        <p style="font-family: Times New Roman,Times,serif;"><font
+            size="-1">You may find the following references helpful (in
+            addition to the links from previous labs):</font></p>
+        <p style="font-family: Times New Roman,Times,serif;"><font
+            size="-1"><span style="font-weight: bold;">General gRPC
+              Tutorial Links</span><br style="font-weight: bold;">
+          </font></p>
+        <p style="font-family: Times New Roman,Times,serif;"><font
+            size="-1"><a
+href="https://keraton.gitbooks.io/docker-cheat-sheet/content/dockercommand_essentials_md.html"><font
+                size="-1">java [</font></a><font size="-1"><a
+                href="https://grpc.io/docs/tutorials/basic/java.html">https://grpc.io/docs/tutorials/basic/java.html</a>]<br>
+              C++ [<a
+href="https://grpc.io/docs/tutorials/basic/c.html#generating-client-and-server-code">https://grpc.io/docs/tutorials/basic/c.html#generating-client-and-server-code</a>]<br>
+              go [<a
+href="https://grpc.io/docs/quickstart/go.html#install-protocol-buffers-v3">https://grpc.io/docs/quickstart/go.html#install-protocol-buffers-v3</a>]<br>
+              python [<a
+                href="https://grpc.io/docs/tutorials/basic/python.html">https://grpc.io/docs/tutorials/basic/python.html</a>]<br>
+            </font> </font></p>
+        <font size="-1">gRPC Guides:&nbsp; <a
+            href="https://grpc.io/docs/guides/">https://grpc.io/docs/guides/</a></font><font
+          size="-1"><br>
+          gRPC Tutorials:&nbsp; <a
+            href="https://grpc.io/docs/tutorials/">https://grpc.io/docs/tutorials/</a></font><font
+          size="-1"><br>
+          C++:&nbsp; <a href="https://grpc.io/docs/quickstart/cpp.html">https://grpc.io/docs/quickstart/cpp.html</a></font><font
+          size="-1"><br>
+          Java:&nbsp; <a
+            href="https://grpc.io/docs/quickstart/java.html">https://grpc.io/docs/quickstart/java.html</a></font><font
+          size="-1"><br>
+          Go:&nbsp; <a href="https://grpc.io/docs/quickstart/go.html">https://grpc.io/docs/quickstart/go.html</a><br>
+        </font><font size="-1">Python:&nbsp; <a
+            href="https://grpc.io/docs/quickstart/python.html">https://grpc.io/docs/quickstart/python.html<br>
+            <br>
+          </a></font><font size="-1"><b>Java RMI:<br>
+            <br>
+          </b><a
+href="https://docs.oracle.com/javase/8/docs/technotes/guides/rmi/faq.html">Java
+
+
+
+
+
+
+
+
+
+
+            RMI and Object Serialization FAQ</a><br>
+          Tutorial's Point RMI <a
+            href="https://www.tutorialspoint.com/java_rmi/index.htm">Tutorial</a><br>
+          Oracle's RMI <a
+href="https://docs.oracle.com/javase/8/docs/technotes/guides/rmi/hello/hello-world.html">Getting
+
+
+
+
+
+
+
+
+
+
+            Started Guide<br>
+          </a>JavaTpoint's <a href="https://www.javatpoint.com/RMI">RMI
+            Guide</a><br>
+        </font><br>
+        <font size="-1"><span style="font-weight: bold;"><font size="-1"><b><font
+                  size="-1"><b>Windows WCF:<br>
+                    <br>
+                  </b></font></b></font></span></font><font size="-1">WCF
+
+
+
+
+
+
+
+
+
+
+          <a href="https://www.tutorialspoint.com/wcf/index.htm">Tutorial</a><br>
+          Microsoft <a
+href="https://docs.microsoft.com/en-us/dotnet/framework/wcf/getting-started-tutorial">Tutorial</a><br>
+          Code Project's <a
+href="https://www.codeproject.com/Articles/406096/A-beginners-tutorial-for-understanding-Windows">Beginner's
+
+
+
+
+
+
+
+
+
+
+            Guide to WCF</a><br>
+        </font><br>
+        <font size="-1"><font size="-1"><span style="font-weight: bold;"><font
+                size="-1"><b><font size="-1"><b>Python-related RPC
+                      mechanisms:<br>
+                      <br>
+                    </b></font></b></font></span></font><font size="-1">Python
+
+
+
+
+
+
+
+
+
+
+            <b>Pickle</b>:<br>
+            Python Docs <a
+              href="https://docs.python.org/3/library/pickle.html">Pickle</a><br>
+            Python <a href="https://wiki.python.org/moin/UsingPickle">UsingPickle</a><br>
+            Python Pickle <a
+href="https://www.datacamp.com/community/tutorials/pickle-python-tutorial">DataCamp</a><br>
+            <br>
+            Python <b>JSON-RPC</b>:<br>
+            Python <a href="https://pypi.org/project/json-rpc/">PyPi
+              JSON-RPC</a><br>
+            Python JSON-RPC <a
+              href="https://github.com/joshmarshall/jsonrpclib">Github
+              example</a> (not tested...)<br>
+            Python JSON-RPC on <a
+              href="https://www.jsonrpc.org/archive_json-rpc.org/python-json-rpc.html">jsonrpc.org</a><b><br>
+            </b></font><b> </b></font><font size="-1"><font size="-1">Another
+
+
+
+
+
+
+
+
+
+
+            <a
+href="http://code.activestate.com/recipes/552751-json-rpc-server-and-client/">example</a><br>
+            <br>
+            <b>Other Examples of RPC mech</b><b>anisms</b>:<br>
+            <br>
+            <b>Go</b>:<br>
+            Go <a
+              href="https://ops.tips/gists/example-go-rpc-client-and-server/">example</a><br>
+            Medium's <a
+              href="https://medium.com/@matzhouse/go-and-rpc-cd32315a5ab1">article</a><br>
+            <br>
+            <b>Haskell</b>:<br>
+            <a href="https://gist.github.com/coopernurse/9732158">The
+              World's Dumbest RPC Example in Haskell</a> (untested)<br>
+            Hackage example of <a
+              href="http://hackage.haskell.org/package/json-rpc">JSON-RPC
+
+
+
+
+
+
+
+
+
+
+              in Haskell</a><br>
+            <br>
+            <br>
+          </font></font> <font size="-1"><span style="font-weight:
+            bold;"><font size="-1"><b>General Docker Tutorial Links</b><a
+                href="https://grpc.io/docs/quickstart/python.html"><br>
+              </a></font> </span></font>
+        <p style="font-family: Times New Roman,Times,serif;"><font
+            size="-1"><a
+href="https://keraton.gitbooks.io/docker-cheat-sheet/content/dockercommand_essentials_md.html">Docker
+
+
+
+
+
+
+
+
+
+
+              Cheat Sheet</a><br>
+            <span style="font-weight: bold;"></span> <a
+              href="https://www.youtube.com/watch?v=YFl2mCHdv24">Learn
+              Docker in 12 Minutes Youtube</a> </font><br>
+          <font size="-1"><a
+              href="https://www.youtube.com/watch?v=pGYAg7TMmp0">Demystifying
+
+
+
+
+
+
+
+
+
+
+              Docker Youtube</a> </font><font size="-1"><br>
+            <a href="http://www.tutorialspoint.com/docker/">TutorialsPoint:&nbsp;
+
+
+
+
+
+
+
+
+
+
+              Docker Tutorial for Absolute Beginners </a></font><font
+            size="-1"><br>
+            <a
+href="https://www.tecmint.com/useful-basic-commands-of-apt-get-and-apt-cache-for-package-management/">Docker
+
+
+
+
+
+
+
+
+
+
+              Overview</a><br>
+            <a
+href="https://www.tecmint.com/useful-basic-commands-of-apt-get-and-apt-cache-for-package-management/">Ubuntu
+
+
+
+
+
+
+
+
+
+
+              package commands</a><br>
+          </font></p>
+        <font size="-1"><span style="font-weight: bold;"></span></font>
+        <p style="font-family: Times New Roman,Times,serif;"><font
+            size="-1"> </font></p>
+        <p style="font-family: Times New Roman,Times,serif;"><font
+            size="-1"><font size="-1"> </font><a
+href="https://www.tecmint.com/useful-basic-commands-of-apt-get-and-apt-cache-for-package-management/"><font
+                size="-1"> </font></a> </font></p>
+      </font></font><font size="+1"><b><br>
+        Submission</b></font>:<br>
+    <br>
+    For Labs:<br>
+    <br>
+    Each student should submit their Lab_N files and any supporting
+    materials to the repo. Use the folder named "lab_2" in your&nbsp;
+    repository (create it if necessary). Please include a README text
+    file that contains any instructions or additional details for the
+    TAs to assist with grading.<br>
+    <br>
+    Setup:<br>
+    <br>
+    We will be using the MPCS GitLab server for version control. The
+    department has published a tool to replace GitHub's Classroom. You
+    will login with your CNET ID at
+    https://course-repos.cs.uchicago.edu/. Here you will find classes
+    you're registered for that have repositories for that class. You
+    will click on the MPCS 51205 — Topics in Software Engineering course
+    for which the repository has been created for then that should take
+    you to the repository that's been created. You can click on your
+    CNETID (as that should have a hyperlink) to take you to the GitLab
+    repository page. That page will contain the instructions needed to
+    clone your repository. You will then perform standard git add, git
+    commit, git push for all homework assignments. This will mean you
+    will perform mkdir commands to create lab repos, which you will push
+    up to your source main branch.<br>
+    <br>
+    Please reach out if you have any questions or issues.<br>
+    <br>
+    <br>
+  </body>
+</html>

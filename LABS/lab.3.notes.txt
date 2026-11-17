@@ -1,0 +1,32 @@
+docker run ubuntu 18.04:
+run -di --hostname msgproducer --name MsgProducer ubuntu:18.04
+
+exec it:
+exec -it MsgProducer /bin/bash
+
+
+Install stuff:
+wget https://repo1.maven.org/maven2/com/rabbitmq/amqp-client/5.6.0/amqp-client-5.6.0.jar
+wget https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar
+wget https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar
+
+using rabbitmq-java-client-5.6.0.tgz
+
+Install OpenJDK Java 8 JDK:
+apt-get install openjdk-8-jdk-headless
+
+root@msgconsumer:/# find /opt
+/opt
+/opt/rabbitmq-java-client
+/opt/rabbitmq-java-client/slf4j-simple-1.7.25.jar
+/opt/rabbitmq-java-client/slf4j-api-1.7.25.jar
+/opt/rabbitmq-java-client/amqp-client-5.6.0.jar
+
+export CLASSPATH=/opt/rabbitmq-java-client/amqp-client-5.6.0.jar:/opt/rabbitmq-java-client/slf4j-api-1.7.25.jar:/opt/rabbitmq-java-client/slf4j-simple-1.7.25.jar:.
+
+Compile Send.java:
+javac Send.java
+
+Run it:
+java -cp ./amqp-client-5.6.0.jar:slf4j-api-1.7.25.jar:slf4j-simple-1.7.25.jar:. Send
+

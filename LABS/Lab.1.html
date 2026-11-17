@@ -1,0 +1,1908 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="Author" content="JMS">
+    <meta name="GENERATOR" content="Mozilla/4.79 [en] (X11; U; Linux
+      2.4.18-4custom i686) [Netscape]">
+    <title>MPCS_51205-Lab_1</title>
+  </head>
+  <body style="color: rgb(0, 0, 0); background-color: rgb(255, 255,
+    255);" vlink="#ff0000" link="#0000ff" alink="#000088">
+    <font style="font-family: Times New Roman,Times,serif;" size="+2">Lab
+
+
+
+
+
+
+
+      1 Details for MPCS </font><font style="font-family: Times New
+      Roman,Times,serif;" size="+2">51205</font><br>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Each
+lab
+
+
+
+
+
+
+
+
+
+
+
+
+        will consist of a small problem and details of how to proceed.
+        Each lab is intended to give every student hands-on experience
+        with the core concepts and technologies covered during the
+        course.&nbsp; A student may concentrate, as a team member, on
+        one technology over another for the final project, but labs are
+        designed to give each and every student exposure to all the
+        technologies that come into play.&nbsp; You need to submit labs
+        to the TAs for grading--see submission instructions below.&nbsp;
+        Generally, unless otherwise specified, you will have one week to
+        complete each assigned lab.</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">See
+the
+
+
+
+
+
+
+
+
+
+
+
+
+        syllabus for information on grading.&nbsp; Turning in lab
+        assignments on time is required, without exception, and <span
+          style="font-style: italic;">all late deliveries will be
+          penalized</span>, <span style="font-style: italic;">regardless
+
+
+
+
+
+
+
+
+
+
+
+          of cause</span>.&nbsp; Submit your assignments to the
+        subversion repository according to the directions on the
+        syllabus page.</font> </p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">You
+may
+
+
+
+
+
+
+
+
+
+
+
+
+        write these solutions in <i>any</i> programming language of
+        your choice.&nbsp; Our suggestion is now is not the time to
+        learn a new programming language along with the concepts
+        themselves.&nbsp; So our suggestion is to use whatever
+        programming language you&nbsp; know best.<br>
+      </font> </p>
+    <p style="font-family: Times New Roman,Times,serif;"><b><u>Lab 1</u></b>
+      &nbsp; <font color="#ff0000">Due: 5:00 pm, Tuesday, October 27,
+        2026</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><u>Problem
+        1:&nbsp; Docker Introduction:</u>&nbsp; <font size="-1"><br>
+      </font></p>
+    <small><span style="font-family: Times New Roman,Times,serif;"></span></small>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><big><span
+            style="font-weight: bold;">BACKGROUND</span>:</big><br>
+      </font></p>
+    <small><span style="font-family: Times New Roman,Times,serif;">Like
+        all programming problems, learning a new technology is not an
+        exercise in reading but rather an exercise in thinking and
+        typing.&nbsp; This lab is designed to give you&nbsp; hands-on
+        experience in some fundamental skills involved in Docker
+        containerization.&nbsp; You will generally find the References
+        section below helpful in addition to the required and
+        recommended reading.&nbsp; When we talk about "Docker", we are
+        talking specifically about the Stable Community Edition of
+        Docker, which is the version we will be using in this
+        class.&nbsp; The Stable Community Edition provides the basic
+        container engine and built-in orchestration, networking, and
+        security.<br>
+        <br>
+        In this lab, you will practice creating Docker images and
+        containers.&nbsp; <br>
+      </span></small> <font size="-1"><span style="font-weight: bold;"></span></font>
+    <p style="font-family: Times New Roman,Times,serif;"><big><b><font
+            size="-1"><big>WHAT YOU NEED TO DO:<br>
+            </big></font></b></big></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">There
+
+
+
+
+
+
+
+
+
+
+        are two shell scripts that you will use to document your work
+        with this lab (that utilize the script command), one if you're
+        working on <a href="runscript.linux.sh">linux</a>, and the
+        other if you're working on <a href="runscript.mac.sh">MacOS</a>.&nbsp;
+Contact
+
+
+
+
+
+
+
+
+
+
+        the TAs if you're working on Windows.&nbsp; </font><font
+        size="-1">We will be looking to see if you have successfully run
+        all the commands required in the lab.&nbsp; Note that you may
+        "play around" further with options and other commands, even as
+        you work through the lab.&nbsp; Therefore if your script output
+        shows additional commands etc., that's perfectly fine (in fact
+        it's great!).&nbsp; We will simply be grading the subset of
+        required commands that you are to follow when working through
+        the this lab, and will ignore any output that we see that is not
+        part of the lab requirements.<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Once
+
+
+
+
+
+
+
+
+
+
+        you run the script, you should see something like:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Script
+
+
+
+
+
+
+
+
+
+
+        started, output file is typescript<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><b>Do
+
+
+
+
+
+
+
+
+
+
+          NOT</b> accidentally exit out of this shell until you are
+        instructed to at the very bottom of this lab.<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Create
+a
+
+
+
+
+
+
+
+
+
+
+        working directory (perhaps something like "~/mpcs51205/lab1" and
+        in that directory type either ./runscript.linux.sh or
+        ./runscript.mac.sh.&nbsp; That will launch a new shell (in your
+        same window), but all&nbsp; your commands and output will be
+        recorded in a file with an extension of "*.out".&nbsp; Once you
+        are finished with Step 3 of this lab, simply type "exit" or
+        press "^d" and you will exit the subshell and your activity will
+        be saved in the script output.&nbsp; Your script output will be
+        saved in a file with your login id and a date-time stamp.&nbsp;
+        The filename will look something like
+        "mark.Tue.Sep.19.17-59-26.CDT.2019.out".&nbsp; Your userid and
+        time stamp will of course be different.&nbsp; This is the file
+        you will submit for grading per the submission instructions
+        below.</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><small><span
+          style="font-weight: bold;">STEP 1 - </span></small><small><span
+          style="font-weight: bold;"><font size="-1">Run everything
+            directly on your laptop</font></span>:</small> <br>
+    </p>
+    <p> <font size="-1">We recommend that you run everything directly
+        on your laptop or desktop.&nbsp; In general, you will want at
+        least 50 Gig of free disk space, and at least 8 Gig of memory on
+        your laptop, and a minimum of 2 cores, 4 or more being
+        ideal.&nbsp; If your laptop or workstation cannot satisfy these
+        minimum guidelines, talk to the TAs and they will be able to
+        give you guidance.&nbsp; Note that trying to do this work on the
+        Linux Cluster in the MPCS labs may prove less than ideal, as the
+        available diskspace to students is based on a quota.&nbsp; If
+        you have the space, you may wish to install and run docker and
+        all images and containers directly on your laptop.&nbsp; Docker
+        is available for most platforms, including MacOS, Windows, and
+        Linux.&nbsp; This is a relatively easy option and
+        straightforward.&nbsp; The only downside to this option is that
+        your 51212 development environment is not "contained" and
+        separate from your working laptop environment as would be the
+        case in Option II below.&nbsp; If you choose to go this route,
+        do the following: </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">1.&nbsp;
+
+
+
+
+
+
+
+
+
+
+        Download and Install docker directly onto your system<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">To
+
+
+
+
+
+
+
+
+
+
+        install docker directly on a Mac, begin <a
+          href="https://docs.docker.com/docker-for-mac/install/">here</a>
+        to install the Stable version.&nbsp; I would suggest following
+        the instructions on installing the Docker Application natively
+        (aka "Docker for Mac"), as opposed to using the older Docker
+        Toolbox.&nbsp; To install docker directly on Windows 10, begin <a
+          href="https://docs.docker.com/docker-for-windows/install/">here</a>
+        to install the Stable version.&nbsp; Docker for Windows requires
+        64bit Windows 10 Pro with Hyper-V. Take a look <a
+href="https://docs.docker.com/docker-for-windows/install/#what-to-know-before-you-install">here</a>
+        for more information on requirements for Windows.&nbsp; If you
+        prefer to install Docker on Linux, you may, as Ubuntu, CentOS,
+        RedHat, etc. are variously supported.&nbsp; See <a
+href="https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/">here</a>
+        for instructions for Ubuntu (but see next sentence!) and <a
+href="https://docs.docker.com/engine/installation/linux/docker-ce/fedora/">here</a>
+        for instructions for RedHat (Fedora).&nbsp; Further instructions
+        for all platforms can be found <a
+          href="https://docs.docker.com">here</a>.&nbsp; NOTE:&nbsp; If
+        you are installing on ubuntu,&nbsp; you will find these simple
+        steps much easier:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">$
+        sudo apt-get update<br>
+        $ sudo apt-get install docker.io<br>
+        $ sudo service docker status [this will verify that docker has
+        been installed and is running]<br>
+        $ sudo adduser USERNAME docker [replace "USERNAME" with your own
+        ubuntu username]<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Once
+you
+
+
+
+
+
+
+
+
+
+
+        have installed docker, run the docker "Hello World" container to
+        verify the sanity of your installation (depending on OS and
+        environment, you may need to manually start Docker (i.e.
+        /Applications/Docker.app, etc.) or even reboot your Windows
+        machine.&nbsp; Here is an example of what you should see (on
+        MacOS) when you run the Hello World exmaple (<span
+          style="font-style: italic;">you</span> type the command
+        "docker run hello-world"):</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><span
+          style="font-family: Courier New,Courier,monospace;">$ <span
+            style="font-weight: bold;">docker run hello-world</span></span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">Unable
+          to find image 'hello-world:latest' locally</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">latest:
+
+
+
+
+
+
+
+
+
+
+          Pulling from library/hello-world</span><br style="font-family:
+          Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">5b0f327be733:
+
+
+
+
+
+
+
+
+
+
+          Pull complete </span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">Digest:
+sha256:1f19634d26995c320618d94e6f29c09c6589d5df3c063287a00e6de8458f8242</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">Status:
+
+
+
+
+
+
+
+
+
+
+          Downloaded newer image for hello-world:latest</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <br style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace; color:
+          rgb(102, 51, 255); font-weight: bold;">Hello from Docker!</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">This
+          message shows that your installation appears to be working
+          correctly.</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <br style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">To
+          generate this message, Docker took the following steps:</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">&nbsp;1.
+
+
+
+
+
+
+
+
+
+
+          The Docker client contacted the Docker daemon.</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">&nbsp;2.
+
+
+
+
+
+
+
+
+
+
+          The Docker daemon pulled the "hello-world" image from the
+          Docker Hub.</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">&nbsp;3.
+
+
+
+
+
+
+
+
+
+
+          The Docker daemon created a new container from that image
+          which runs the</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+          executable that produces the output you are currently reading.</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">&nbsp;4.
+
+
+
+
+
+
+
+
+
+
+          The Docker daemon streamed that output to the Docker client,
+          which sent it</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+          to your terminal.</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <br style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">To try
+          something more ambitious, you can run an Ubuntu container
+          with:</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">&nbsp;$
+
+
+
+
+
+
+
+
+
+
+          docker run -it ubuntu bash</span><br style="font-family:
+          Courier New,Courier,monospace;">
+        <br style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">Share
+          images, automate workflows, and more with a free Docker ID:</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">Visit:
+          &nbsp; <a href="https://cloud.docker.com/">https://cloud.docker.com/</a><br
+            style="font-family: Courier New,Courier,monospace;">
+        </span> <br style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">For
+          more examples and ideas, visit:</span><br style="font-family:
+          Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">&nbsp;<a
+            href="https://docs.docker.com/engine/userguide/">https://docs.docker.com/engine/userguide/</a></span><br
+          style="font-family: Courier New,Courier,monospace;">
+      </font></p>
+    <font size="-1">The key is to see that lovely <span
+        style="font-weight: bold;">"</span><span style="color: rgb(102,
+        51, 255); font-weight: bold;">Hello from Docker!</span>" output
+      (although yours probably won't be in <span style="color: rgb(102,
+        51, 255);">purple</span>!).&nbsp; Once you see that,
+      congratulations, you're off to the races and may proceed.&nbsp;
+      Pay no attention to the "Unable to find image" warning, <i>that's
+        normal</i> and par for the course, because that's the first time
+      you ran hello-world and no image was local in your local
+      repository, so it was downloaded from the docker hub.<br>
+      <br>
+    </font>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><span
+          style="font-weight: bold;">STEP 2</span>:</font></p>
+    <p style="font-family: Times New Roman,Times,serif; font-weight:
+      bold;"><font size="-1">Create a personal docker hub ID and
+        repository</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">The
+
+
+
+
+
+
+
+
+
+
+        next step is to get real...that is, join the docker
+        community.&nbsp; Go <a href="https://hub.docker.com/">here</a>
+        and sign up on the Docker Hub and create your own Docker
+        ID.&nbsp; Signing up on the hub will give you space on the
+        docker hub where you can store your own working containers, and
+        leverage more than 100,000 containers and images that other
+        developers have already created (hello-world is one).&nbsp; <br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><span
+          style="font-weight: bold;">STEP 3</span>:</font></p>
+    <p style="font-family: Times New Roman,Times,serif; font-weight:
+      bold;"><font size="-1">General intro to images and containers with
+        a few examples<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif; font-weight:
+      bold;"><i><font size="-1">Make sure you have your runscript
+          working before continuing.</font></i><br>
+    </p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">For
+this
+
+
+
+
+
+
+
+
+
+
+        first lab, we are going to simply run a few commands and make
+        sure that they work, which will also give you a taste of working
+        within Docker.&nbsp; First, you will need to document your
+        exercises, and to do this, you will use a Unix program called
+        script.&nbsp; There are two shell scripts that you will use
+        (that utilize the script command), one if you're working on <a
+          href="runscript.linux.sh">linux</a>, and the other if you're
+        working on <a href="runscript.mac.sh">MacOS</a>.&nbsp; If
+        you're running Windows, your only option will be to either (a)
+        start a new <b>cmd</b> window, perform all your actions in that
+        window, and then, when finished, <i>select all</i> and then <i>copy
+
+
+
+
+
+
+
+
+
+          and paste</i> the window output into a file and submit that
+        file, or (b) install cygwin and run the <i>script</i> command
+        in cygwin.&nbsp; We will be looking to see if you have
+        successfully run all the commands required in the lab.&nbsp;
+        Note that you may "play around" further with options and other
+        commands, even as you work through the lab.&nbsp; Therefore if
+        your script output shows additional commands etc., that's
+        perfectly fine (in fact it's great!).&nbsp; We will simply be
+        grading the subset of required commands that you are to follow
+        when working through the this lab and subsequent labs, and will
+        ignore any output that we see that is not part of the lab
+        requirements.<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">First,
+make
+
+
+
+
+
+
+
+
+
+
+        sure docker is running either on your laptop or in your VM (if
+        you are using one).&nbsp; If you are working in a VM, do the
+        following commands <span style="font-style: italic;">inside</span>
+        your Ubuntu VirtualBox VM.</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Create
+a
+
+
+
+
+
+
+
+
+
+
+        working directory (perhaps something like "~/mpcs51205/lab1" and
+        in that directory type either runscript.linux.sh or
+        runscript.mac.sh.&nbsp; That will launch a new shell (in your
+        same window), but all&nbsp; your commands and output will be
+        recorded in a file with an extension of "*.out".&nbsp; Once you
+        are finished with Step 3 of this lab, simply type "exit" or
+        press "^d" and you will exit the subshell and your activity will
+        be saved in the script output.&nbsp; Your script output will be
+        saved in a file with your login id and a date-time stamp.&nbsp;
+        The filename will look something like
+        "mark.Tue.Sep.19.17-59-26.CDT.2019.out".&nbsp; Your userid and
+        time stamp will of course be different.&nbsp; This is the file
+        you will submit for grading per the submission instructions
+        below.</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Ok,
+
+
+
+
+
+
+
+
+
+
+        the first thing you're going to do is type "<span
+          style="font-weight: bold; font-family: Courier
+          New,Courier,monospace;">docker</span>".&nbsp; Docker will
+        print out it's help file, which gives the various flags and
+        commands you can pass to docker.&nbsp; This is a fairly robust
+        list of options, but it will give you an idea of the wealth of
+        things Docker can do.&nbsp; Beside each of the flags and
+        commands, you will see a short description of what each flag and
+        command does.&nbsp; For example, beside the "exec" command,
+        Docker prints out "Run a command in a running container."&nbsp;
+        Thus, the "exec" command can be used to run a container.&nbsp;
+        We will talk about images and containers in class.<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Now
+
+
+
+
+
+
+
+
+
+
+        type "<span style="font-family: Courier New,Courier,monospace;
+          font-weight: bold;">docker exec --help</span>".&nbsp; Docker
+        will print out the help for the "docker exec" command.&nbsp;
+        This will list the Usage pattern along with all the options and
+        will again repeat what the command does, i.e., </font><font
+        size="-1">"Run a command in a running container."&nbsp; You can
+        pass in the --help option with any docker command.&nbsp; Try
+        getting help on the run command:&nbsp; </font><font size="-1">type
+
+
+
+
+
+
+
+
+
+        "<span style="font-family: Courier New,Courier,monospace;
+          font-weight: bold;">docker run --help</span>".&nbsp; </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Now
+
+
+
+
+
+
+
+
+
+
+        let's get to the meat of it.&nbsp; type </font><font size="-1">"<span
+          style="font-family: Courier New,Courier,monospace;
+          font-weight: bold;">docker images</span>".&nbsp; When you give
+        the docker images command, it will print out all the Docker
+        images that you have downloaded locally into your
+        repository.&nbsp; In your case, you will likely have only one
+        image, something like this:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><span
+          style="font-family: Courier New,Courier,monospace;">$ docker
+          images</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">REPOSITORY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+TAG&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          IMAGE
+          ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          SIZE</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">hello-world&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+latest&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+05a3bd381fc2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          7 days
+          ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          1.84kB</span><br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">This
+
+
+
+
+
+
+
+
+
+
+        shows that in your local repository you have an image called
+        "hello-world" and its Tag is "latest" and its Image ID is </font><font
+        size="-1">05a3bd381fc2 and the size if 1.84 kilobytes.&nbsp; We
+        will talk about tags and Image IDs in class.&nbsp; <br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Now
+
+
+
+
+
+
+
+
+
+
+        that we've seen our Docker images, let's look at some
+        containers.&nbsp; </font><font size="-1">Type "<span
+          style="font-family: Courier New,Courier,monospace;
+          font-weight: bold;">docker ps -a</span>".&nbsp; This will list
+        all of the instantiated containers you have created (yes, even
+        without your&nbsp; knowing it).&nbsp; When I run that command, I
+        see this:</font></p>
+    <p style="font-family: Courier New,Courier,monospace;"><font
+        size="-1">$ docker ps -a<br>
+        CONTAINER ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        IMAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+COMMAND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+PORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        NAMES<br>
+        ef60e564f68e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        hello-world&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"/hello"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+        20 seconds ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Exited (0) 19
+        seconds
+        ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+        vibrant_benz<br>
+        7b06f097a37a&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        hello-world&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"/hello"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+        About a minute ago&nbsp;&nbsp; Exited (0) About a minute
+        ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+        suspicious_yonath<br>
+        2c377206d2d1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        hello-world&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"/hello"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+        18 hours ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        Exited (0) 18 hours
+        ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+        serene_edison<br>
+        45406c7c504a&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        hello-world&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"/hello"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+        18 hours ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        Exited (0) 18 hours
+        ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+        youthful_feynman<br>
+        17342cabc340&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        hello-world&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"/hello"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+        18 hours ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        Exited (0) 18 hours
+        ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+        thirsty_shaw<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">This
+is
+
+
+
+
+
+
+
+
+
+
+        a listing of all the containers I have executed.&nbsp; Wow,
+        that's a lot of containers.&nbsp; Every time I execute the
+        docker run command, I get a new container!&nbsp; How
+        wonderful.&nbsp; It even gives my new container an interesting
+        name, such as youthful_feynman.&nbsp; It also lists the
+        Container ID for each container, the Image that the container is
+        based on ("hello-world"), and when I created it, it's exit
+        status (or if it's still running), any ports the container has
+        bound (we'll see this later), and the container's working
+        Name.&nbsp; Note that I know that none of the containers is
+        currently running.&nbsp; I know that because they've all
+        exited.&nbsp; I can also type </font><font size="-1"> "<span
+          style="font-family: Courier New,Courier,monospace;
+          font-weight: bold;">docker ps</span>" by itself.&nbsp; When I
+        do this, I'm asking Docker to print out all running containers I
+        have.&nbsp; There are none, so that command wiill not print
+        anything out if I don't have any currently-running
+        containers.&nbsp; It prints out something like this:<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">$
+        docker ps<br>
+        CONTAINER ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        IMAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+COMMAND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+PORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        NAME</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Well,
+great.&nbsp;
+
+
+
+
+
+
+
+
+
+
+        Let's get a real image down that can actually run for a while,
+        why don't we?&nbsp; Type the following command:&nbsp; "</font><font
+        size="-1"><span style="font-family: Courier
+          New,Courier,monospace; font-weight: bold;">docker run -it
+          ubuntu:14.04 /bin/bash</span>".&nbsp; Now be careful here and
+        notice your NEW PROMPT:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><span
+          style="font-family: Courier New,Courier,monospace;">$ docker
+          run -it ubuntu:14.04 /bin/bash</span><br style="font-family:
+          Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">Unable
+          to find image 'ubuntu:14.04' locally</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">14.04:
+          Pulling from library/ubuntu</span><br style="font-family:
+          Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">bae382666908:
+
+
+
+
+
+
+
+
+
+
+          Pull complete </span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">29ede3c02ff2:
+
+
+
+
+
+
+
+
+
+
+          Pull complete </span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">da4e69f33106:
+
+
+
+
+
+
+
+
+
+
+          Pull complete </span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">8d43e5f5d27f:
+
+
+
+
+
+
+
+
+
+
+          Pull complete </span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">b0de1abb17d6:
+
+
+
+
+
+
+
+
+
+
+          Pull complete </span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">Digest:
+sha256:32c87496025f5cdc5e56b5e5393a4df102b14dd4928f702b2019b18faf1ec48a</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">Status:
+
+
+
+
+
+
+
+
+
+
+          Downloaded newer image for ubuntu:14.04</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">root@0fc3e8b45816:/#
+
+
+
+
+
+
+
+
+
+
+        </span><br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Your
+prompt
+
+
+
+
+
+
+
+
+
+
+        is a tad different.&nbsp; It appears your username is now "root"
+        and your prompt is a root #.&nbsp; Congratulations.&nbsp; You
+        are IN the ubuntu container.&nbsp; Which container?&nbsp; In the
+        container with the Container ID of 0fc3e8b45816.&nbsp; You can
+        verify all this by bringing up a separate xterm window and
+        running the following command:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><span
+          style="font-family: Courier New,Courier,monospace;">$ docker
+          ps</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">CONTAINER
+
+
+
+
+
+
+
+
+
+
+          ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          IMAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+COMMAND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+PORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+          NAMES</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">0fc3e8b45816&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ubuntu:14.04&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          3 minutes ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Up 3
+          minutes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          determined_hawking</span><br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">There's
+
+
+
+
+
+
+
+
+
+
+        your Container ID listed </font><font size="-1">0fc3e8b45816.&nbsp;
+It's
+
+
+
+
+
+
+
+
+
+
+        status is "Up 3 minutes".&nbsp; That means your container is
+        running!&nbsp; You can play around all you want in your new
+        Ubuntu container.&nbsp; Play around by typing a few commands at
+        the # prompt, such as ls -la, ps -ef, echo $SHELL, df, date,
+        etc.&nbsp; Try running "<span style="font-weight: bold;">apt-get
+          update</span>" now, which will update your ubuntu (debian)
+        packages to the latest and greatest.&nbsp; Amazing.&nbsp; You
+        just modified the contents of your container.&nbsp; Now type "<span
+          style="font-weight: bold;">exit</span>" or press "<span
+          style="font-weight: bold;">^d</span>" and you'll be back at
+        your original $ prompt.&nbsp; Try typing "<span
+          style="font-weight: bold;">docker ps</span>" again.&nbsp;
+        Notice nothing is currently running.&nbsp; That's because you
+        exited your container, and it stopped running the /bin/bash
+        shell.&nbsp; Type "<span style="font-weight: bold;">docker ps -a</span>"
+        again.</font></p>
+    <font size="-1"><span style="font-family: Courier
+        New,Courier,monospace;">$ docker ps -a</span><br
+        style="font-family: Courier New,Courier,monospace;">
+      <span style="font-family: Courier New,Courier,monospace;">CONTAINER
+ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+IMAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+COMMAND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+CREATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+PORTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        NAMES</span><br style="font-family: Courier
+        New,Courier,monospace;">
+      <span style="font-family: Courier New,Courier,monospace;">0fc3e8b45816&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ubuntu:14.04&nbsp;&nbsp;&nbsp;&nbsp;
+"/bin/bash"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+        10 minutes ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Exited (0) About a
+        minute
+        ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+        determined_hawking<br>
+        ef60e564f68e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        hello-world&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        "/hello"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 hours
+        ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Exited (0) 2
+        hours
+        ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        vibrant_benz<br>
+        7b06f097a37a&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        hello-world&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        "/hello"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 hours
+        ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Exited (0) 2
+        hours
+        ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        suspicious_yonath<br>
+        2c377206d2d1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        hello-world&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        "/hello"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 20
+        hours ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Exited (0)
+        20 hours
+        ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+        serene_edison<br>
+        45406c7c504a&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        hello-world&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        "/hello"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 20
+        hours ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Exited (0)
+        20 hours
+        ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+        youthful_feynman<br>
+        17342cabc340&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        hello-world&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        "/hello"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 20
+        hours ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Exited (0)
+        20 hours
+        ago&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+        thirsty_shaw<br>
+        <br>
+      </span><span style="font-weight: bold;">STEP 3</span>:</font><br>
+    <br>
+    <small><span style="font-family: Times New Roman,Times,serif;">Execute
+
+
+
+
+
+
+
+
+
+
+        the following commands when instructed to do so.&nbsp; In
+        another terminal window, create a text file called <b>responses.txt</b>
+        into which you will write your responses when asked to do so in
+        each RESPOND section below.&nbsp; Feel free to copy and paste
+        output from any commands into your response file.&nbsp; <br>
+        <br>
+        How do we launch a container and keep it running?&nbsp;
+        Basically there are two ways:<br>
+        <br>
+        pass the <span style="font-weight: bold;">-it</span> flags to
+        either <span style="font-weight: bold;">docker run</span> or <span
+          style="font-weight: bold;">docker exec</span> and launch a
+        shell (/bin/bash):<br>
+        <br>
+        EXECUTE:&nbsp; docker run -it ubuntu:14.04 /bin/bash<br>
+        <br>
+      </span></small><small><span style="font-family: Times New
+        Roman,Times,serif;">Now, exit your container by either typing <span
+          style="font-weight: bold;">exit</span> or pressing Ctrl-d:<br>
+        <br>
+        EXECUTE:&nbsp; exit [or press ^d]<br>
+      </span></small><br>
+    <small><span style="font-family: Times New Roman,Times,serif;">RESPOND:&nbsp;
+
+
+
+
+
+
+
+
+
+
+        What did that <span style="font-weight: bold;">docker run</span>
+        command you just executed above do?<br>
+        &nbsp;&nbsp;&nbsp; <br>
+        Now, run the image and pass it the �id flag (daemon
+        interactive):<br>
+        <br>
+        EXECUTE:&nbsp; docker ps<br>
+        <br>
+        EXECUTE:&nbsp; docker run -id ubuntu:14.04<br>
+        <br>
+        EXECUTE:&nbsp; docker ps<br>
+        <br>
+        RESPOND:&nbsp; What do you see and what did you learn from this?<br>
+        <br>
+        EXECUTE:&nbsp; docker exec -it f62568d02b31 /bin/bash<br>
+        [of course you will use the appropriate <i>container id</i> (or
+        name) from the docker ps command for <span style="font-style:
+          italic;">YOUR</span> container id...<span style="font-style:
+          italic;">NOT</span> f62568d02b31 above.&nbsp; You can use
+        docker ps [-a] to find this id]<br>
+        <br>
+        Now, exit out of your container by pressing either ^d or typing
+        "exit".<br>
+      </span></small><small><span style="font-family: Times New
+        Roman,Times,serif;"><br>
+        Ok, great, but notice every time we run a docker images, we seem
+        to be �collecting� containers (you can see them with "docker ps
+        -a")....wouldn�t it be nice to be able to save and work in a
+        single container?&nbsp; We can.&nbsp; First, let�s stop our
+        Ubuntu container:<br>
+        <br>
+        EXECUTE:&nbsp; docker stop f62568d02b31<br>
+        [of course you will use the appropriate container id from the
+        docker ps command for YOUR container id...<br>
+        wait for it, may take a few seconds to shut down...]<br>
+        <br>
+        Let's now erase all the ubuntu:14.04 containers we've amassed so
+        far:<br>
+        <br>
+        EXECUTE:&nbsp; docker rm $(docker ps -a |grep 14.04|awk '{print
+        $1}')<br>
+        <br>
+        EXECUTE:&nbsp; docker ps -a<br>
+        <br>
+        RESPOND:&nbsp; What just happened?&nbsp; What did the docker rm
+        command do?<br>
+        <br>
+        EXECUTE:&nbsp; docker run -id --name [youruserid]_ubuntu
+        ubuntu:14.04<br>
+        [supply your own usesrID above in the command]<br>
+        <br>
+        RESPOND:&nbsp; What just happened?&nbsp; Is your userid image
+        currently running in a container or not?&nbsp; How do find out
+        if it's running?<br>
+        <br>
+        EXECUTE:&nbsp; docker exec -it [youruserid]_ubuntu /bin/bash<br>
+        <br>
+        Ok, great, now we�re in our container.&nbsp; Now what?&nbsp;
+        Well, let�s update the Ubuntu operating system with the latest
+        release:<br>
+        <br>
+        [execute these commands INSIDE your Ubuntu container...]<br>
+        <br>
+        EXECUTE: uname -a&nbsp;&nbsp;&nbsp; <br>
+        <br>
+        EXECUTE:&nbsp; apt-get update&nbsp;&nbsp;&nbsp; <br>
+        <br>
+        RESPOND:&nbsp; What just happened?<br>
+        &nbsp;&nbsp;&nbsp; <br>
+        Now download the vi editor:<br>
+        <br>
+        EXECUTE:&nbsp; apt-get install -y vim<br>
+        <br>
+        EXECUTE:&nbsp; which vim<br>
+        <br>
+        EXECUTE:&nbsp; cd /; ls -la; whoami<br>
+        <br>
+        RESPOND:&nbsp; What did you learn from executing those commands?<br>
+        <br>
+        Now, exit your container by either typing exit or pressing
+        Ctrl-d:<br>
+        <br>
+        EXECUTE:&nbsp; exit [or press ^d]<br>
+        <br>
+        You have now exited your container and are back at your OS
+        prompt.<br>
+        <span style="color: rgb(204, 0, 0);"></span><br style="color:
+          black;">
+        <span style="color: black;"> EXECUTE:&nbsp; docker stats -a
+          --no-stream</span><br style="color: black;">
+        <br style="color: black;">
+        <span style="color: black;"> RESPOND:&nbsp; What is all this
+          info?&nbsp; What does it mean?</span><br style="color: black;">
+        <br style="color: black;">
+        <span style="color: black;"> EXECUTE:&nbsp; docker stop
+          [youruserid]_ubuntu</span><br style="color: black;">
+        <br style="color: black;">
+        <span style="color: black;"> EXECUTE:&nbsp; docker ps</span><br
+          style="color: black;">
+        <br style="color: black;">
+        <span style="color: black;"> RESPOND:&nbsp; What does docker
+          stop do (be specific about the signal)?</span><br
+          style="color: black;">
+        <br style="color: black;">
+        <span style="color: black;"> Now, start your container again:</span><br
+          style="color: black;">
+        <br style="color: black;">
+        <span style="color: black;"> docker start [youruserid]_ubuntu</span><br
+          style="color: black;">
+        <br style="color: black;">
+        <span style="color: black;"> EXECUTE:&nbsp; docker kill
+          [youruserid]_ubuntu</span><br style="color: black;">
+        <br style="color: black;">
+        <span style="color: black;"> RESPOND:&nbsp; What just
+          happened?&nbsp; Be specific about signals.&nbsp; (run "docker
+          kill --help" to get more info).</span><br style="color:
+          rgb(204, 0, 0);">
+        <br>
+        Now share a directory from your hard drive with your container
+        (cd to /tmp)<br>
+        <br>
+        On your host system (or inside you virtualbox VM, if you're
+        running docker inside virtual box), cd to your </span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"><font
+          size="-1">~/mpcs51205/lab1 directory</font>.&nbsp; Now create
+        a new file called lab1.txt in your lab1 directory and edit its
+        contents to be "I love docker".<br>
+        <br>
+        EXECUTE:&nbsp; docker run -it -v ~/mpcs51205/lab1:/clab1
+        ubuntu:14.04 /bin/bash [<i>just make sure you give the correct
+          directory path for you clab1 subdirectory</i>]<br>
+        <br>
+        Now, from within your container:<br>
+        <br>
+        EXECUTE:&nbsp; cat /clab1/lab1.txt<br>
+        <br>
+        EXECUTE:&nbsp; ls �la /clab1<br>
+        <br>
+        RESPOND:&nbsp; Discuss what just happened.&nbsp; Be specific
+        about the docker run command above and the effect of the -v
+        flag...<br>
+        <br>
+        Now, exit and remove the container you just created...whatever
+        its name or id.<br>
+        &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br>
+        Now, suppose we�d like to copy our ~/</span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"><small><span
+            style="font-family: Times New Roman,Times,serif;"><font
+              size="-1">mpcs51205/</font></span></small>lab1/lab1.txt
+        file into your [youruserid]_ubuntu container.&nbsp; How would
+        you do that?<br>
+        <br>
+        EXECUTE:&nbsp; docker cp ~/</span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"><small><span
+            style="font-family: Times New Roman,Times,serif;"><font
+              size="-1">mpcs51205/</font></span></small>lab1/lab1.txt
+        [youruserid]_ubuntu:/clab1.txt<br>
+        <br>
+        RESPOND:&nbsp; Is your [youruserid]_ubuntu running?&nbsp; Does
+        it matter to the docker cp command whether the container is
+        actually running?<br>
+        <br>
+        EXECUTE (if your ubuntu is not running):&nbsp; docker start
+        [youruserid]_ubuntu<br>
+        <br>
+        EXECUTE:&nbsp; docker exec -it [youruserid]_ubuntu /bin/bash<br>
+        <br>
+        Now, inside your container:<br>
+        <br>
+        EXECUTE:&nbsp; ls -la /clab1.txt<br>
+        <br>
+        RESPOND:&nbsp; What do you see?<br>
+        <br>
+        EXECUTE:&nbsp; cat /clab1.txt<br>
+        <br>
+        RESPOND:&nbsp; What do you see?<br>
+        <br>
+        EXECUTE:&nbsp; vi /clab1.txt<br>
+        <br>
+        Now modify its contents in some way.<br>
+        <br>
+        Now exit your container.<br>
+        <br>
+        EXECUTE:&nbsp; docker cp [youruserid]_ubuntu:/clab1.txt
+        ./modified.txt<br>
+        <br>
+        cat ./modified.txt<br>
+        <br>
+        RESPOND:&nbsp; What do you see?<br>
+        <br>
+        Now make this all permanent by saving a new image based on your
+        modified container.&nbsp; That way, you can use
+        [youruserid]_ubuntu for all sorts of new purposes:<br>
+        <br>
+        EXECUTE:&nbsp; docker images<br>
+        EXECUTE:&nbsp; docker commit [youruserid]_ubuntu
+        ubuntu:[youruserid]_update<br>
+        ESXECUTE: docker images<br>
+        <br>
+        RESPOND:&nbsp; What just happened?&nbsp; What is the difference
+        between the outputs of the two docker images commands above?<br>
+        <br>
+      </span></small><small><span style="font-family: Times New
+        Roman,Times,serif;">EXECUTE:&nbsp; docker inspect ubuntu:</span></small><small><span
+        style="font-family: Times New Roman,Times,serif;">[youruserid]_update</span></small><br>
+    <small><span style="font-family: Times New Roman,Times,serif;"> <br>
+        RESPOND:&nbsp; What is all this information, in summary?<br>
+        <br>
+        One last thing to do.&nbsp; Let's practice saving a container
+        image to a tarball so we can share our images and containers
+        with others.<br>
+        <br>
+        If you need to (run docker images to find out), get down busybox
+        again:<br>
+        <br>
+        EXECUTE:&nbsp; docker run busybox echo Hello 51205 Class Peeps!<br>
+        <br>
+        Now, let�s copy that image to a tarball (REPOSITORY and TAG are
+        separated by colons in docker commands):<br>
+        <br>
+        EXECUTE:&nbsp; docker stop [youruserid]_ubuntu<br>
+        <br>
+        EXECUTE:&nbsp; docker save -o ubuntu_[youruserid]_update.tar
+        ubuntu:[youruserid]_update<br>
+        <br>
+        EXECUTE:&nbsp; docker rmi ubuntu:[youruserid]_update<br>
+        <br>
+        EXECUTE:&nbsp; docker images<br>
+        <br>
+        Now, let's load that saved image into a :<br>
+        <br>
+        EXECUTE:&nbsp; docker load&nbsp; &lt;
+        ubuntu_[youruserid]_update.tar<br>
+        <br>
+        Now, let�s see our newly imported image:<br>
+        <br>
+        EXECUTE:&nbsp; docker images<br>
+        <br>
+        Now, run our new image to instantiate a container:<br>
+        <br>
+        EXECUTE:&nbsp; docker run -it ubuntu:[youruserid]_update echo
+        Hello 51205 Class Peeps!<br>
+        <br>
+        Finally, remove the new container you just created with docker
+        rm.<br>
+        <br>
+        <br>
+      </span></small><small><span style="font-family: Times New
+        Roman,Times,serif;"> <span style="font-weight: bold;">Make sure
+          you <span style="color: red;">SAVE YOUR SCRIPT FILE</span>.&nbsp;
+
+
+
+
+
+
+
+
+
+          <br>
+          <br>
+          Simply type "exit" and you will see something like:<br>
+        </span></span></small><br>
+    <font size="-1"><span style="font-family: Times New
+        Roman,Times,serif;"><span style="font-family: Times New
+          Roman,Times,serif;">Script done, output file is typescript<br>
+          Saving output to file: mark.Tue.Jul.24.12-55-01.CDT.2018.out<br>
+        </span></span> </font><br>
+    <small><span style="font-family: Times New Roman,Times,serif;"></span></small><font
+      size="-1"><span style="font-family: Courier
+        New,Courier,monospace;"></span></font>
+    <p style="font-family: Times New Roman,Times,serif;"> </p>
+    <small><span style="font-family: Times New Roman,Times,serif;"><font
+          color="#cc33cc"><span style="font-weight: bold;"></span></font></span></small><big><font
+        size="-1"><big><span style="font-weight: bold;">References</span>:</big></font></big>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">You
+may
+
+
+
+
+
+
+
+
+
+
+
+
+        find the following references helpful (in addition to the links
+        from previous labs):</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><span
+          style="font-weight: bold;">General Docker Tutorial Links</span><br
+          style="font-weight: bold;">
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><a
+href="https://docs.docker.com/get-started/docker_cheatsheet.pdf">Docker
+          Cheat Sheet</a><br>
+        <span style="font-weight: bold;"></span> <a
+          href="https://www.youtube.com/watch?v=YFl2mCHdv24">Learn
+          Docker in 12 Minutes Youtube</a> </font><br>
+      <font size="-1"><a
+          href="https://www.youtube.com/watch?v=pGYAg7TMmp0">Demystifying
+
+
+
+
+
+
+
+
+
+
+          Docker Youtube</a> </font><font size="-1"><br>
+        <a href="http://www.tutorialspoint.com/docker/">TutorialsPoint:&nbsp;
+
+
+
+
+
+
+
+
+
+
+          Docker Tutorial for Absolute Beginners </a></font><font
+        size="-1"><br>
+        <a href="https://docs.docker.com/engine/docker-overview/">Docker
+          Overview</a><br>
+        <a
+href="https://www.tecmint.com/useful-basic-commands-of-apt-get-and-apt-cache-for-package-management/">Ubuntu
+
+
+
+
+
+
+
+
+
+
+          package commands</a><br>
+      </font></p>
+    <font size="-1"><span style="font-weight: bold;"></span></font>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><font
+          size="-1"> </font><a
+href="https://www.tecmint.com/useful-basic-commands-of-apt-get-and-apt-cache-for-package-management/"><font
+            size="-1"> </font></a> </font></p>
+    <br>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="+1"><b>Submission</b></font>:<br>
+      <br>
+      For Labs:<br>
+      <br>
+      Each student should submit their LabN files and any supporting
+      materials to the repo (create a lab_1 directory for this lab,
+      e..g.). Please include a README text file that contains any
+      instructions or additional details for the TAs to assist with
+      grading.<br>
+      <br>
+      Setup:<br>
+    </p>
+    <p style="font-family: Times New Roman,Times,serif;">
+      <meta charset="UTF-8">
+      We will be using the MPCS GitLab server for version control. The
+      department has published a tool to replace GitHub's Classroom. You
+      will login with your CNET ID at
+      https://course-repos.cs.uchicago.edu/. Here you will find classes
+      you're registered for that have repositories for that class. You
+      will click on the MPCS 51205 — Topics in Software Engineering
+      course for which the repository has been created for then that
+      should take you to the repository that's been created. You can
+      click on your CNETID (as that should have a hyperlink) to take you
+      to the GitLab repository page. That page will contain the
+      instructions needed to clone your repository. You will then
+      perform standard git add, git commit, git push for all homework
+      assignments. This will mean you will perform mkdir commands to
+      create lab repos, which you will push up to your source main
+      branch.<br>
+      <br>
+      Please reach out if you have any questions or issues.<br>
+      <br>
+    </p>
+  </body>
+</html>

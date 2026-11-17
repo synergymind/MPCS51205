@@ -1,0 +1,1035 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="Author" content="JMS">
+    <meta name="GENERATOR" content="Mozilla/4.79 [en] (X11; U; Linux
+      2.4.18-4custom i686) [Netscape]">
+    <title>MPCS_51205-Lab_4</title>
+  </head>
+  <body style="color: rgb(0, 0, 0); background-color: rgb(255, 255,
+    255);" vlink="#ff0000" link="#0000ff" alink="#000088">
+    <font style="font-family: Times New Roman,Times,serif;" size="+2">Lab
+
+
+
+
+
+
+
+
+
+
+
+      4 Details for MPCS 51205<br>
+    </font>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Each
+lab
+
+
+
+
+
+
+
+
+
+
+
+        will consist of a small problem and details of&nbsp; how to
+        proceed. Each lab is intended to give every student hands-on
+        experience with the core technologies utilized during the
+        course.&nbsp; A student may concentrate, as a team member, on
+        one technology over another for the final project, but labs are
+        designed to give each and every student exposure to all the
+        technologies that come into play.&nbsp; You need to submit labs
+        to the TAs for grading--see submission instructions below.&nbsp;
+        Generally, unless otherwise specified, you will have one week to
+        complete each assigned lab.</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">See
+the
+
+
+
+
+
+
+
+
+
+
+
+        syllabus for information on grading.&nbsp; Turning in lab
+        assignments on time is required, without exception, and <span
+          style="font-style: italic;">all late deliveries will be
+          penalized</span>, <span style="font-style: italic;">regardless
+
+
+
+
+
+
+
+
+
+
+          of cause</span>.&nbsp; Submit your assignments to the
+        subversion repository according to the directions on the
+        syllabus page.</font> </p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">You
+may
+
+
+
+
+
+
+
+
+
+
+
+        write this solution in Java.<br>
+      </font> </p>
+    <p style="font-family: Times New Roman,Times,serif;"><b><u>Lab 3</u></b>
+      &nbsp; <font color="#ff0000">Due: 5:00 pm, Tuesday, November 17,
+        2026</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><u>Problem
+        1:&nbsp; Playing With Multiple Dockerized Microservices and
+        MongoDB:</u>&nbsp; <font size="-1"><br>
+      </font></p>
+    <small><span style="font-family: Times New Roman,Times,serif;"></span></small>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><big><span
+            style="font-weight: bold;">BACKGROUND</span>:</big><br>
+      </font></p>
+    <small><span style="font-family: Times New Roman,Times,serif;">Like
+        all programming problems, learning a new technology is not an
+        exercise in reading but rather and exercise in typing.&nbsp;
+        This lab is designed to give you hands-on experience in (a)
+        running multiple dockerized microservices that communicate both
+        synchronously and asynchronously with each other and finally
+        write data to a MongoDB database.&nbsp; You will generally find
+        the References section below helpful in addition to the required
+        and recommended reading.&nbsp; When we talk about "Docker", we
+        are talking specifically about the <span style="font-style:
+          italic;">Stable Community Edition</span> of Docker, which is
+        the version we will be using in this class.&nbsp; The Stable
+        Community Edition provides the basic container engine and
+        built-in orchestration, networking, and security.</span></small><br>
+    <font size="-1"><span style="font-weight: bold;"></span></font>
+    <p style="font-family: Times New Roman,Times,serif;"><big><b><font
+            size="-1"><big>WHAT YOU NEED TO DO:</big></font></b></big><br>
+    </p>
+    <p style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;">STEP 1</span>:<big> </big><br>
+    </p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">For
+this
+
+
+
+
+
+
+
+
+
+
+
+        fourth lab, we are going to run a prototype that consists of
+        four distinct microservices.&nbsp; This prototype consists of:<br>
+        <br>
+        &nbsp;1.&nbsp; A dockerized Apache Tomcat web server </font><font
+        size="-1">microservice </font><font size="-1">named <span
+          style="font-weight: bold;">WebServer</span> running ubuntu
+        that will serve up a web page and backing jsp and Java servlet
+        that will prompt the user to add a new user to the system.&nbsp;
+        This web page is for adding new users only and is <span
+          style="font-style: italic;">strictly no frills</span>.&nbsp; A
+        field for a username, and a second field for a password, and an
+        "Confirm New User" button that, when clicked, does no error
+        checking and sends the new user request (over synchronous RMI
+        from the servlet) to the <span style="font-weight: bold;">UserManagement</span>
+        microservice, which has an RMI Server listening for remote
+        calls.<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">2.&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+        A dockerized<span style="font-weight: bold;"> UserManagement</span>
+        microservice running ubuntu that hosts an RMI Server that
+        listens for new user requests from the <span
+          style="font-weight: bold;">WebServer</span>'s servlet-based
+        RMI client.&nbsp; </font><font size="-1">A <span
+          style="font-style: italic;">synchronous</span> RMI client
+        running in the servlet on the <span style="font-weight: bold;">WebServer</span>
+        is used to communicate new user requests to the RMI server
+        running on <span style="font-weight: bold;">UserManagement</span>.&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+        <br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">
+        3.&nbsp; The RMI server running on<span style="font-weight:
+          bold;"> UserManagement</span> receives the new user request
+        and forwards that request <span style="font-style: italic;">asynchronously</span>
+        to a queue running in a dockerized RabbitMQ </font><font
+        size="-1">microservice </font><font size="-1">called <span
+          style="font-weight: bold;">MyWabbit</span>. <br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">
+        4.&nbsp; A dockerized <span style="font-weight: bold;">LoggingService</span>,
+        based on a docker MongoDB image will be listening/subscribed to
+        the <span style="font-weight: bold;">MyWabbit</span>'s "new
+        user" queue, and upon every incoming message (about a new user
+        to add), will write that new user's information out to a new
+        MongoDB document.&nbsp; Note that the purpose of the MongoDB
+        database is <span style="font-style: italic;">not</span> to
+        store new user information, but <span style="font-style:
+          italic;">to provide a document store for log messages</span>
+        from the system.<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">The
+
+
+
+
+
+
+
+
+
+
+
+        big picture here is this:</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><img
+          style="width: 1054px; height: 631px;" alt="kahuna"
+          src="BigKahuna.jpg"><br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">These
+
+
+
+
+
+
+
+
+
+
+
+        steps will involve running several different docker containers
+        and installing software inside them.&nbsp; Details are below.</font><font
+        size="-1">&nbsp; After downloading and installing the prototype
+        in STEPS 2-5, get the prototype running (there will be a few
+        code and environment changes you will need to make) <span
+          style="font-style: italic;">and examine the code carefully</span>
+        and observe how it executes.<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">First,
+make
+
+
+
+
+
+
+
+
+
+
+
+        sure docker is running either on your laptop (Option I from the
+        first lab) or in your VM (Option II from the first lab). <br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;">STEP 2</span>:<br>
+    </p>
+    <p style="font-family: Times New Roman,Times,serif;"><span
+        style="font-family: Times New Roman,Times,serif;"><span
+          style="font-weight: bold;"><small>Get RabbitMQ working in a
+            Docker Container (MyWabbit </small></span><small>microservice</small><span
+          style="font-weight: bold;"><small>)<br>
+            <br>
+          </small></span></span><small><span style="font-family: Times
+          New Roman,Times,serif;">You will reuse your MyWabbit
+          microservice from the previous lab.&nbsp; If you have removed
+          it or it has otherwise suffered irreperable damage, you may
+          create another one.&nbsp; Simply refer back to the
+          instructions for Lab 3, STEP 1, in order to do that.&nbsp;
+          (You may need to docker rm your current MyWabbit
+          container).&nbsp; You will need to have net-tools installed in
+          your RabbitMQ container.&nbsp;&nbsp; You should have installed
+          net-tools in Lab 3.<br>
+          <br>
+          One thing.&nbsp; docker exec into the container and execute<br>
+        </span></small></p>
+    <p style="font-family: Times New Roman,Times,serif;"><small><span
+          style="font-family: Times New Roman,Times,serif;">cat
+          /etc/hosts<br>
+        </span></small></p>
+    <p style="font-family: Times New Roman,Times,serif;"><small><span
+          style="font-family: Times New Roman,Times,serif;">You will see
+          something like:<br>
+        </span></small></p>
+    <p style="font-family: Times New Roman,Times,serif;"><small><span
+          style="font-family: Times New Roman,Times,serif;">root@silly-wabbit:/#
+          cat /etc/hosts<br>
+          ...<br>
+          <b><font color="#990000">172.17.0.2&nbsp;&nbsp;&nbsp;
+              silly-wabbit</font></b><br>
+        </span></small></p>
+    <p style="font-family: Times New Roman,Times,serif;"><small><span
+          style="font-family: Times New Roman,Times,serif;">Write down
+          the IP address reported for your MyWabbit (aka silly-wabbit)
+          container.&nbsp; It will be something like "173.17.0.2".&nbsp;
+          Note that your mileage may vary and what's important is that
+          last digit.&nbsp; You will need to modify some source in <span
+            style="font-style: italic;">both</span> the <span
+            style="font-weight: bold;">UserManagement</span> <span
+            style="font-style: italic;">and</span> <span
+            style="font-weight: bold;">LoggingService</span> containers
+          with that IP address and name.<br>
+          <br>
+          The good news is this is all you have to do for STEP 2.<br>
+        </span></small><small><span style="font-family: Times New
+          Roman,Times,serif;"> </span></small></p>
+    <br>
+    <span style="font-weight: bold;">STEP 3</span>:<br>
+    <br>
+    <span style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small>Get ubuntu working in a Docker
+          Container (UserManagement </small></span><small>microservice</small><span
+        style="font-weight: bold;"><small>)</small><br>
+      </span></span><span style="font-family: Times New
+      Roman,Times,serif;"><br>
+    </span><small><span style="font-family: Times New
+        Roman,Times,serif;"></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;">First, get
+        down the Ubuntu:18.04 container.&nbsp; Do this by executing the
+        following command:<br>
+        <br>
+        <font size="-1" color="#000099">docker run -di --hostname usrmgr
+          --name UserManagement -p 1099:1099 -p 1100:1100 ubuntu:22.04</font></span></small><font
+      size="-1"><br>
+      <br>
+    </font><small><span style="font-family: Times New
+        Roman,Times,serif;">Once you have that container down (and
+        running), obtain a bash shell in that container by running
+        docker exec into the container.&nbsp; Once you are in your <span
+          style="font-weight: bold;">UserManagement</span> container,
+        docker exec into the container and install some software in the
+        container:</span></small><small><span style="font-family: Times
+        New Roman,Times,serif;"><br>
+        <br>
+        <span style="color: rgb(0, 0, 153);"> apt-get update</span><br
+          style="color: rgb(0, 0, 153);">
+        <span style="color: rgb(0, 0, 153);"> apt-get install -y vim</span><br
+          style="color: rgb(0, 0, 153);">
+        <span style="color: rgb(0, 0, 153);"></span><span style="color:
+          rgb(0, 0, 153);">apt-get install -y net-tools</span><br
+          style="color: rgb(0, 0, 153);">
+        <span style="color: rgb(0, 0, 153);"> apt-get install -y
+          openssh-client<br>
+        </span></span></small><small><span style="font-family: Times New
+        Roman,Times,serif;"><span style="color: rgb(0, 0, 153);"><span
+            style="caret-color: rgb(0, 0, 153); color: rgb(0, 0, 153);
+            font-family: &quot;Times New Roman&quot;, Times, serif;
+            font-size: 13.3333px; font-style: normal; font-variant-caps:
+            normal; font-weight: normal; letter-spacing: normal;
+            text-align: start; text-indent: 0px; text-transform: none;
+            white-space: normal; word-spacing: 0px;
+            -moz-text-size-adjust: auto; -webkit-text-stroke-width: 0px;
+            background-color: rgb(255, 255, 255); display: inline
+            !important; float: none;">apt-get install -y
+            --no-install-recommends openjdk-17-jdk-headless
+            ca-certificates</span></span></span></small><strike><small><span
+          style="font-family: Times New Roman,Times,serif;"><span
+            style="color: rgb(0, 0, 153);"><span style="caret-color:
+              rgb(0, 0, 153); color: rgb(0, 0, 153); font-family:
+              &quot;Times New Roman&quot;, Times, serif; font-size:
+              13.3333px; font-style: normal; font-variant-caps: normal;
+              font-weight: normal; letter-spacing: normal; text-align:
+              start; text-indent: 0px; text-transform: none;
+              white-space: normal; word-spacing: 0px;
+              -moz-text-size-adjust: auto; -webkit-text-stroke-width:
+              0px; background-color: rgb(255, 255, 255); display: inline
+              !important; float: none;"></span></span></span></small></strike><font
+      size="-1"><span style="color: rgb(0, 0, 153);"></span><br>
+    </font><font size="-1"><br>
+      Next, issue these commands in order:<br>
+      <br>
+      <font color="#000099">rm -rf /var/lib/apt/lists/*</font><br>
+      <font color="#000099">apt-get update (<i>yes...again</i>...)<br>
+        apt-get install -y curl<br>
+        mkdir -p /opt/lib<br>
+        curl -fsSL -o /opt/lib/amqp-client-5.21.0.jar
+https://repo1.maven.org/maven2/com/rabbitmq/amqp-client/5.21.0/amqp-client-5.21.0.jar<br>
+        curl -fsSL -o /opt/lib/slf4j-api-1.7.36.jar
+https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar<br>
+        curl -fsSL -o /opt/lib/slf4j-simple-1.7.36.jar
+https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar<br>
+        mkdir /opt/src<br>
+        <br>
+        <font color="#000000">Now, get down Lab.4.Tomcat.tgz from the
+          cluster:</font><br>
+        <br>
+        cd /<br>
+        scp
+        userid@linux.cs.uchicago.edu:/stage/classes/archive/2026/fall/51205-1/libs/Lab.4.UserManagement.tgz
+        .<br>
+        tar xzvf Lab.4.UserManagement.tgz<br>
+      </font><br>
+      Examine the java source code listed below carefully.&nbsp; Make
+      sure you understand what is going on.&nbsp; </font><font
+      size="-1"><span style="color: rgb(0, 0, 153);"></span>Focus
+      specifically on:<br>
+      <br>
+      /opt/src/um/proto/um/UserManagementServer.java<br>
+      /opt/src/common/proto/common/UserService.java<br>
+      <br>
+      Now, we need to update the /etc/hosts file in our user management
+      container to make sure that the user management container and code
+      can find RabbitMQ.&nbsp; We want to add a line for our
+      silly-wabbit container:<br>
+      <br>
+      vi or edit the /etc/hosts file, and add the (<font color="#990000">red</font>)
+      line for RabbitMQ and save it (make sure it matches the actual IP
+      that you recorded in Step 2 above!):<br>
+      <br>
+      172.17.0.4&nbsp;&nbsp;&nbsp; usrmgr<br>
+      <font color="#990000">172.17.0.2&nbsp;&nbsp;&nbsp; silly-wabbit
+        mywabbit</font><br>
+      <br>
+      Next, execute:<br>
+      <br>
+      <font color="#000099">mkdir -p /opt/app</font><br>
+      <br>
+      And then compile all the source code:<br>
+      <br>
+      <font color="#000099">javac -cp "/opt/lib/*" -d /opt/app $(find
+        /opt/src -name '*.java')</font><br>
+      <br>
+      Once this is all done, all that's left us is to execute it:<br>
+      <br>
+      <font color="#000099">nohup java -cp "/opt/app:/opt/lib/*"
+        proto.um.UserManagementServer &gt; /tmp/um.log 2&gt;&amp;1 &amp;</font><br>
+    </font><font size="-1"><br>
+    </font><font size="-1">You should not see any errors.&nbsp; Fix any
+      issues.&nbsp; If you do experience issues, my money is on IP
+      mismatches between containers...<br>
+      <br>
+      You can verify that your UserManagementServer is running by
+      issuing this command:<br>
+      <br>
+      <font color="#000099">ps -ef</font><br>
+    </font><b><font size="-1"><tt>UID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          PID&nbsp;&nbsp;&nbsp; PPID&nbsp; C STIME
+          TTY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TIME
+          CMD</tt><tt><br>
+        </tt><tt>...</tt><tt><br>
+        </tt><tt>root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          4061&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7&nbsp; 7 11:54
+          pts/0&nbsp;&nbsp;&nbsp; 00:00:00 <font color="#990000">java
+            -cp /opt/app:/opt/lib/* proto.um.UserManagementServer</font></tt><tt><br>
+        </tt><tt>...</tt><tt><br>
+        </tt></font></b><font size="-1"><br>
+      You are looking for that line that lists the java line running <font
+        color="#990000">proto.um.UserManagementServer</font>.<br>
+    </font> <small><span style="font-family: Times New
+        Roman,Times,serif;"> </span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"> </span></small><span
+      style="font-weight: bold;"></span><small><span style="font-family:
+        Times New Roman,Times,serif;"></span></small><br>
+    <span style="font-weight: bold;"><br>
+      STEP 4</span>:<br>
+    <br>
+    <span style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small>Get MongoDB working in a
+          Docker Container (LoggingService </small></span><small>microservice</small><span
+        style="font-weight: bold;"><small>)</small><br>
+      </span><br>
+    </span><small><span style="font-family: Times New
+        Roman,Times,serif;"></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;">First, get
+        down the MongoDB database Server into a new container.&nbsp; Do
+        this by executing the following docker command:<br>
+        <br>
+        <font color="#000099">docker run -di --hostname logger --name
+          LoggingService -p 28017:28017 -p 27017:27017 -e
+          MONGODB_PASS="password" -v /data/db -d mongo:8.0</font><br>
+        <br>
+        Read the <a href="https://hub.docker.com/r/tutum/rabbitmq/">MongoDB
+
+
+
+
+
+
+
+
+
+
+
+          page</a> on the docker hub to make sure you understand the
+        implication of these port assignments.&nbsp; Once you have that
+        container down (and running), obtain a bash shell in that
+        container by running docker exec into the container.&nbsp; Once
+        you are in your LoggingService container, install some software
+        in the container:<br>
+        <br style="color: rgb(0, 0, 153);">
+      </span></small><small style="color: rgb(0, 0, 153);"><span
+        style="font-family: Times New Roman,Times,serif;">apt-get update<br>
+        apt-get install -y vim<br>
+        apt-get install -y net-tools<br>
+        apt-get install -y openssh-client<br>
+        apt-get install -y --no-install-recommends
+        openjdk-17-jdk-headless ca-certificates<br>
+      </span></small><font color="#000099"><small><span
+          style="font-family: Times New Roman,Times,serif;"> </span></small></font><small><span
+        style="font-family: Times New Roman,Times,serif;"><font
+          color="#000099">apt-get install -y curl</font><br>
+        <br>
+        Now, execute the following commands:<br>
+        <br>
+        <font color="#000099">mkdir /opt/lib<br>
+          curl -fsSL -o /opt/lib/amqp-client-5.21.0.jar
+https://repo1.maven.org/maven2/com/rabbitmq/amqp-client/5.21.0/amqp-client-5.21.0.jar<br>
+          curl -fsSL -o /opt/lib/slf4j-api-1.7.36.jar
+https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar<br>
+          curl -fsSL -o /opt/lib/slf4j-simple-1.7.36.jar
+https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar<br>
+          curl -fsSL -o /opt/lib/mongodb-driver-sync-5.1.4.jar
+https://repo1.maven.org/maven2/org/mongodb/mongodb-driver-sync/5.1.4/mongodb-driver-sync-5.1.4.jar<br>
+          curl -fsSL -o /opt/lib/mongodb-driver-core-5.1.4.jar
+https://repo1.maven.org/maven2/org/mongodb/mongodb-driver-core/5.1.4/mongodb-driver-core-5.1.4.jar<br>
+          curl -fsSL -o /opt/lib/bson-5.1.4.jar
+          https://repo1.maven.org/maven2/org/mongodb/bson/5.1.4/bson-5.1.4.jar<br>
+          curl -fsSL -o /opt/lib/bson-record-codec-5.1.4.jar
+https://repo1.maven.org/maven2/org/mongodb/bson-record-codec/5.1.4/bson-record-codec-5.1.4.jar<br>
+        </font><br>
+        Once done, we need some source code for our MongoDB-based
+        LoggingServer.<br>
+        <br>
+        <font color="#000099">cd /<br>
+          scp
+          userid@linux.cs.uchicago.edu:/stage/classes/archive/2026/fall/51205-1/libs/Lab.4.LoggingService.tgz
+          .<br>
+          tar xzvf Lab.4.LoggingService.tgz</font><br>
+        <br>
+        Examine the java source code listed below carefully.&nbsp; Make
+        sure you understand what is going on.&nbsp; Focus specifically
+        on:<br>
+        <br>
+        /opt/src/proto/logging/LoggingService.java<br>
+        <br>
+        Now, we need to update the /etc/hosts file in our logging
+        service container (as we did with user management) to make sure
+        that the logging service container and code can find
+        RabbitMQ.&nbsp; We want to add a line for our silly-wabbit
+        container:<br>
+        <br>
+        vi or edit the /etc/hosts file, and add the (<font
+          color="#990000">red</font>) line for RabbitMQ and save it
+        (make sure it matches the actual IP that you recorded in Step 2
+        above!):<br>
+        <br>
+        172.17.0.4&nbsp;&nbsp;&nbsp; usrmgr<br>
+        <font color="#990000">172.17.0.2&nbsp;&nbsp;&nbsp; silly-wabbit
+          mywabbit</font><br>
+        <br>
+        Next, execute:<br>
+        <br>
+        <font color="#000099">mkdir /opt/app</font><br>
+        <br>
+        And now, let's compile the code:<br>
+        <br>
+        <font color="#000099">javac -cp "/opt/lib/*" -d /opt/app $(find
+          /opt/src -name '*.java')</font><br>
+        <br>
+        Next, let's run our MongoDB server (in the background):<br>
+        <br>
+        <font color="#000099">mongod --bind_ip_all --dbpath /data/db
+          &amp;</font><br>
+        <br>
+        You may need to hit return twice to retrieve your prompt.&nbsp;
+        And finally, let's execute our source code:<br>
+        <br>
+        <font color="#000099">java -cp "/opt/app:/opt/lib/*"
+          proto.logging.LoggingService &amp;</font><br>
+        <br>
+        Hit return once more.&nbsp; You should not see any errors.&nbsp;
+        Fix any issues.&nbsp; If you do experience issues, my money is
+        on IP mismatches between containers...</span></small><br>
+    <small><span style="font-family: Times New Roman,Times,serif;"> </span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"> </span></small><span
+      style="font-weight: bold;"></span><small><span style="font-family:
+        Times New Roman,Times,serif;"></span></small><span
+      style="font-weight: bold;"><br>
+    </span><br>
+    <span style="font-weight: bold;"><span style="font-weight: bold;">STEP
+        4</span>:<br>
+      <br>
+      <span style="font-family: Times New Roman,Times,serif;"><span
+          style="font-weight: bold;"><small>Get Tomcat working in a
+            Docker Container (WebService </small></span><small>microservice</small><span
+          style="font-weight: bold;"><small>)</small><br>
+        </span></span><small><span style="font-family: Times New
+          Roman,Times,serif;"><br>
+          First, get down the Apache Tomcat app server into a new
+          container.&nbsp; Do this by executing the following docker
+          command:<br>
+        </span></small> </span>
+    <p style="font-family: Times New Roman,Times,serif; color: rgb(0, 0,
+      153);"><font size="-1">docker run -di --hostname tomcat --name
+        WebServer -p 8080:8080 tomcat:10.1-jdk17-temurin-noble<br>
+      </font></p>
+    <small><span style="font-family: Times New Roman,Times,serif;">Once
+        you have that container down (and verify it is running), obtain
+        a bash shell in that container by running docker exec into the
+        container:</span></small><small><span style="font-family: Times
+        New Roman,Times,serif;"><span style="color: rgb(0, 0, 153);"><font
+            color="#000000"><br>
+            <br>
+            <font color="#000099">docker exec -it WebServer /bin/bash</font><br>
+          </font></span></span></small><br>
+    <font size="-1"><span style="font-family: Times New
+        Roman,Times,serif;"><span style="color: rgb(0, 0, 153);"><font
+            color="#000000"><span style="font-family: Times New
+              Roman,Times,serif;">Once you are in your WebService
+              container, install some software in the container.&nbsp;
+              Run the following commands at the root prompt:</span><span
+              style="font-family: Times New Roman,Times,serif;"><br>
+              <br>
+              <span style="color: rgb(0, 0, 153);">apt-get update</span><br
+                style="color: rgb(0, 0, 153);">
+              <span style="color: rgb(0, 0, 153);"> apt-get install -y
+                vim</span><br style="color: rgb(0, 0, 153);">
+              <span style="color: rgb(0, 0, 153);"></span><span
+                style="color: rgb(0, 0, 153);">apt-get install -y
+                net-tools</span><br style="color: rgb(0, 0, 153);">
+              <span style="color: rgb(0, 0, 153);"> apt-get install -y
+                openssh-client</span></span></font></span></span></font><small><span
+        style="font-family: Times New Roman,Times,serif;"><span
+          style="color: rgb(0, 0, 153);"><font color="#000000"><small><span
+                style="font-family: Times New Roman,Times,serif;"><span
+                  style="color: rgb(0, 0, 153);"><br>
+                </span></span></small><small><span style="font-family:
+                Times New Roman,Times,serif;"><span style="color: rgb(0,
+                  0, 153);"> </span></span></small><br>
+            Next, let's blow away the default Tomcat stuff:<br>
+            <br>
+            <font color="#000099">rm -rf /usr/local/tomcat/webapps/*<br>
+            </font><br>
+            And then let's create some working directories:<br>
+            <br>
+            <font color="#000099">mkdir -p /opt/src/common /opt/src/web
+              /usr/local/tomcat/webapps/ROOT/WEB-INF/classes
+              /opt/src/web<br>
+            </font><br>
+            Now, get down Lab.4.Tomcat.tgz from the cluster:<br>
+            <br>
+            <font color="#000099">cd /</font><br>
+          </font></span></span></small><br>
+    <small><span style="font-family: Times New Roman,Times,serif;"><span
+          style="color: rgb(0, 0, 153);"><font color="#000000"><span
+              style="caret-color: rgb(0, 0, 153); color: rgb(0, 0, 153);
+              font-family: -webkit-standard; font-size: small;
+              font-style: normal; font-variant-caps: normal;
+              font-weight: 400; letter-spacing: normal; orphans: 2;
+              text-align: start; text-indent: 0px; text-transform: none;
+              white-space: normal; widows: 2; word-spacing: 0px;
+              -webkit-text-stroke-width: 0px; background-color: rgb(255,
+              255, 255); text-decoration: none; display: inline
+              !important; float: none;">scp
+              userid@linux.cs.uchicago.edu:/stage/classes/archive/2026/fall/51205-1/libs/Lab.4.Tomcat.tgz
+              .</span><br style="caret-color: rgb(0, 0, 153); color:
+              rgb(0, 0, 153); font-family: -webkit-standard; font-size:
+              small; font-style: normal; font-variant-caps: normal;
+              font-weight: 400; letter-spacing: normal; orphans: 2;
+              text-align: start; text-indent: 0px; text-transform: none;
+              white-space: normal; widows: 2; word-spacing: 0px;
+              -webkit-text-stroke-width: 0px; background-color: rgb(255,
+              255, 255); text-decoration: none;">
+            <br>
+            <font color="#000099">tar xzvf Lab.4.Tomcat.tgz</font><br>
+            <br>
+            Now, let's examine the code.&nbsp; Look through the
+            following source files carefully and make sure you
+            understand what is going on inside each:<br>
+            <br>
+            /opt/src/common/proto/common/UserService.java<br>
+            /opt/src/web/proto/web/AddUserServlet.java<br>
+            /opt/src/common/proto/common/UserService.java<br>
+            /usr/local/tomcat/webapps/ROOT/index.jsp<br>
+            /usr/local/tomcat/webapps/ROOT/result.jsp<br>
+            <br>
+            Once you have a good idea of what is going on, hop out of
+            your container's bash shell and have docker restart the
+            Tomcat server:<br>
+            <br>
+            <font color="#000099">docker restart WebServer</font><br>
+            <br>
+            Now, exec a bash shell back into WebServer.&nbsp; <br>
+            <br>
+            One last thing:&nbsp; we need to add the IP address for the
+            UserManagement container to our WebServer.&nbsp; Hop back
+            into your UserManagement container and type:<br>
+            <br>
+          </font><b><font color="#000000"><tt><font color="#000099">root@usrmgr:/#
+                  cat /etc/hosts</font></tt><tt><br>
+              </tt><tt>127.0.0.1&nbsp;&nbsp;&nbsp; localhost</tt><tt><br>
+              </tt><tt>...</tt><tt><br>
+              </tt><tt><font color="#990000">172.17.0.4&nbsp;&nbsp;&nbsp;
+                  usrmgr</font></tt><tt><br>
+              </tt><tt>172.17.0.2&nbsp;&nbsp;&nbsp; silly-wabbit
+                mywabbit</tt><tt><br>
+              </tt></font></b><font color="#000000"><br>
+            Copy that <font color="#990000">red</font> usrmgr line with
+            its IP address, and we're going to add that line to our
+            /etc/hosts file in our WebServer container's /etc/hosts file
+            (with one modification):<br>
+            <br>
+            <font color="#000099">root@tomcat:/usr/local/tomcat# cat
+              /etc/hosts</font><br>
+          </font><b><font color="#000000"><tt>127.0.0.1&nbsp;&nbsp;&nbsp;
+                localhost</tt><tt><br>
+              </tt><tt>...</tt><tt><br>
+              </tt><tt>172.17.0.6&nbsp;&nbsp;&nbsp; tomcat</tt><tt><br>
+              </tt><font color="#990000"><tt>172.17.0.4&nbsp;&nbsp;&nbsp;
+                  usrmgr usermanagement</tt></font></font></b><font
+            color="#000000"><br>
+            <br>
+          </font></span></span></small><small><span style="color: rgb(0,
+        0, 153);"><font color="#000000">Save the /etc/hosts file.<br>
+          <br>
+        </font>
+      </span></small><span style="font-weight: bold;"><br>
+      STEP 6</span>:<br>
+    <br>
+    <span style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small>Add a new user: </small></span></span><span
+      style="font-family: Times New Roman,Times,serif;"></span><span
+      style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small><br>
+        </small></span></span><small><span style="font-family: Times New
+        Roman,Times,serif;"></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"><br>
+        <span style="font-weight: bold;">WebServer startup</span>:<br>
+        <br>
+      </span></small><small><span style="font-family: Times New
+        Roman,Times,serif;"><span style="color: rgb(0, 0, 153);"><font
+            color="#000000">Go to your browser and hit
+            http://localhost:8080
+            You should now be in the Tomcat
+            servlet for entering a new user into our "system".</font></span></span></small><small><span
+        style="font-family: Times New Roman,Times,serif;"><br>
+        <br>
+        <span style="font-weight: bold;"><font size="-1">You will now
+            verify that it all works "soup to nuts":</font></span></span></small><span
+      style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small><br>
+        </small></span></span><small><span style="font-family: Times New
+        Roman,Times,serif;"><br>
+        Now,</span></small><small><span style="font-family: Times New
+        Roman,Times,serif;"> enter a new user and a new user
+        password.&nbsp; Click on the "Confirm New User" button. You
+        should see no errors.&nbsp; If you see errors, it is most likely
+        due to a mismatch among IP addresses and names.&nbsp; Fix those
+        mismatches.<br>
+        <br>
+        Then, navigate to your LoggingService terminal, and see if you
+        have new output.&nbsp; You should see some output in the
+        terminal:<br>
+        <br>
+        <b><tt>root@logger:/# <font color="#990000">Logged new user
+              document: NewName</font></tt></b><br>
+        <br>
+        Now, hit return once and run the mongo shell:<br>
+        <br>
+      </span></small><font size="-1">root@</font><font size="-1">mongodb</font><font
+      size="-1">:# </font><font size="-1"><span style="color: rgb(0, 0,
+        153);">mongosh<br>
+        <br>
+      </span></font><small><span style="font-family: Times New
+        Roman,Times,serif;">At the "test&gt;" prompt in mongo, type the
+        following commands:<br>
+        &gt;</span></small><font size="-1"> </font><font size="-1"><span
+        style="color: rgb(0, 0, 153);">show dbs<br>
+      </span></font><small><span style="font-family: Times New
+        Roman,Times,serif;">&gt;</span></small><font size="-1"> use
+      logging</font><font size="-1"><span style="color: rgb(0, 0, 153);"><br>
+      </span></font><small><span style="font-family: Times New
+        Roman,Times,serif;">&gt;</span></small><font size="-1"> show
+      collections</font><font size="-1"><span style="color: rgb(0, 0,
+        153);"><br>
+      </span></font><small><span style="font-family: Times New
+        Roman,Times,serif;">&gt;</span></small><font size="-1">
+      db.newUsers.find().pretty()<br>
+    </font><small><span style="font-family: Times New
+        Roman,Times,serif;">&gt;</span></small><font size="-1"> quit()</font><br>
+    <font size="-1"><br>
+      You should see the message for the new user you created in
+      mongodb, as a new document.&nbsp; Your interaction should look
+      something like this:<br>
+      <br>
+    </font><b><font size="-1"><tt>test&gt; <font color="#000099">show
+            dbs</font></tt><tt><br>
+        </tt><tt>admin&nbsp;&nbsp;&nbsp; 40.00 KiB</tt><tt><br>
+        </tt><tt>config&nbsp;&nbsp; 92.00 KiB</tt><tt><br>
+        </tt><tt>local&nbsp;&nbsp;&nbsp; 40.00 KiB</tt><tt><br>
+        </tt><tt>logging&nbsp; 40.00 KiB</tt><tt><br>
+        </tt><tt>test&gt; <font color="#000099">use logging</font></tt><tt><br>
+        </tt><tt>switched to db logging</tt><tt><br>
+        </tt><tt>logging&gt; <font color="#000099">show collections</font></tt><tt><br>
+        </tt><tt>newUsers</tt><tt><br>
+        </tt><tt>logging&gt; <font color="#000099">db.newUsers.find().pretty()</font></tt><tt><br>
+        </tt><tt>[</tt><tt><br>
+        </tt><tt>&nbsp; {</tt><tt><br>
+        </tt><tt>&nbsp;&nbsp;&nbsp; _id:
+          ObjectId('6ae9d073f22b527ce2e4afca'),</tt><tt><br>
+        </tt><tt>&nbsp;&nbsp;&nbsp; username: 'NewUser',</tt><tt><br>
+        </tt><tt>&nbsp;&nbsp;&nbsp; password: 'NewPass',</tt><tt><br>
+        </tt><tt>&nbsp;&nbsp;&nbsp; receivedAt:
+          ISODate('2026-11-03T12:15:47.121Z')</tt><tt><br>
+        </tt><tt>&nbsp; }</tt><tt><br>
+        </tt><tt>]</tt><tt><br>
+        </tt><tt>logging&gt; </tt><tt><br>
+        </tt></font></b><font size="-1"><br>
+    </font><small><span style="font-family: Times New
+        Roman,Times,serif;">You see that, congratulations:&nbsp; you've
+        done quite a lot.<br>
+        <br>
+        <b>An aside:</b><br>
+        <br>
+        <span style="font-style: italic;">Note</span> that the default
+        logging location for Tomcat is /usr/local/tomcat/logs/* in the
+        Tomcat container.&nbsp; You will find that the log calls (for
+        debugging purposes...<span style="font-style: italic;">not your</span>
+        logging calls to the LoggingService) in the servlet go to a file
+        called "localhost.2026.11.14.log" (your mileage may vary with
+        the name, but you can grep the logs directory for
+        "context.log"), and you can add log calls inside the servlet
+        code like this:<br>
+        <br>
+        &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; ...<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="font-style:
+          italic;">context.log</span>("in doPost");<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="font-style:
+          italic;">context.log</span>("in Preparing to call RMI");<br>
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; String userName =
+        request.getParameter( "user_name" );<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="font-style:
+          italic;">context.log</span>("userName is: "+userName);<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; String userPassword =
+        request.getParameter( "user_password" );<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="font-style:
+          italic;">context.log</span>("userPassword is: "+userPassword);<br>
+        &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; ...<br>
+        <br>
+        A sample of the output of this logging looks like this:<br>
+        <br>
+        192.168.65.1 - - [02/Nov/2026:19:23:13 +0000] "GET /addUser
+        HTTP/1.1" 405 752<br>
+        192.168.65.1 - - [02/Nov/2026:19:23:16 +0000] "GET / HTTP/1.1"
+        200 302<br>
+        192.168.65.1 - - [02/Nov/2026:19:23:50 +0000] "POST /addUser
+        HTTP/1.1" 200 261<br>
+        192.168.65.1 - - [02/Nov/2026:19:25:16 +0000] "GET / HTTP/1.1"
+        200 302<br>
+        192.168.65.1 - - [02/Nov/2026:19:25:26 +0000] "POST /addUser
+        HTTP/1.1" 200 271<br>
+        192.168.65.1 - - [02/Nov/2026:19:27:48 +0000] "GET / HTTP/1.1"
+        200 302<br>
+        192.168.65.1 - - [02/Nov/2026:19:27:55 +0000] "POST /addUser
+        HTTP/1.1" 200 271<br>
+        192.168.65.1 - - [02/Nov/2026:19:27:59 +0000] "GET / HTTP/1.1"
+        200 302<br>
+        192.168.65.1 - - [02/Nov/2026:19:28:52 +0000] "POST /addUser
+        HTTP/1.1" 200 271<br>
+        192.168.65.1 - - [02/Nov/2026:19:29:56 +0000] "GET / HTTP/1.1"
+        200 302<br>
+        <br>
+        You can add context.log() calls to enhance your understanding of
+        what the servlet code is doing.<br>
+      </span></small><font size="-1"> <br>
+    </font><span style="font-weight: bold;">STEP 8</span>:<br>
+    <span style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small><br>
+          Review. <br>
+        </small></span></span><small><span style="font-family: Times New
+        Roman,Times,serif;"><br>
+        It might behoove you to now go back "down" through the code,
+        from the tomcat servlet through the UserManagement service
+        through the LoggingService code, and make sure you understand
+        what all is taking place here.&nbsp; <br>
+        <br>
+      </span></small><span style="font-weight: bold;">STEP 9</span>:<br>
+    <span style="font-family: Times New Roman,Times,serif;"><span
+        style="font-weight: bold;"><small><br>
+          Your turn (only if you want). <br>
+        </small></span></span><small><span style="font-family: Times New
+        Roman,Times,serif;"><br>
+        Now, the servlet really doesn't know whether the user and
+        password were actually successfully logged in the mongodb
+        database.&nbsp; Frankly, in the real world, that's perfectly
+        fine, and the cost of doing business "fire and forget".&nbsp;
+        But what if the servlet <span style="font-style: italic;">did</span>
+        want to know that the data was successfully logged before it
+        returned from doPost?&nbsp; Let's imagine that we do care.<br>
+        <br>
+        Now, <span style="font-style: italic;"></span>create a
+        Request/Reply queue in the Rabbit management console (one each)
+        and have the servlet create a CorrelationID (you can hard-code
+        this CorrelationID) after it has made the call to the RMI server
+        in UserManagement, and send the CorrelationID via the Request
+        queue from doPost().&nbsp; <br>
+        <br>
+        Then, inside the <span style="font-weight: bold;">LoggingService</span>
+        code, <span style="font-style: italic;">after</span>
+        successfully writing the data to the mongodb database, have the
+        <span style="font-weight: bold;">LoggingService</span> retrieve
+        the CorrelationID from the Request queue and send it back to the
+        servlet via the Reply queue, which will be listening to the
+        Reply queue.&nbsp; <br>
+        <br>
+        Once the servlet receives the CorrelationID back from the
+        LoggingService via the Reply queue, the servlet can then
+        consider its work "done".&nbsp; Create both the Request and
+        Reply queues as durable.<br>
+        <br>
+        Hints:&nbsp; You will need to add the amqp jar to the Tomcat's
+        lib directory and restart the Tomcat <span style="font-weight:
+          bold;">WebServer</span> container.<br>
+        <br>
+        <span style="font-style: italic;"></span></span></small><big><font
+        size="-1"><big><span style="font-weight: bold;">References</span>:</big></font></big>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">You
+may
+
+
+
+
+
+
+
+
+
+
+
+        find the following references helpful (in addition to the links
+        from previous labs):</font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><a
+href="https://www.tecmint.com/useful-basic-commands-of-apt-get-and-apt-cache-for-package-management/">Ubuntu
+package
+
+
+
+
+
+
+
+
+
+
+
+          commands<br>
+        </a><a href="https://hub.docker.com/_/mysql/">The docker page
+          for MongoDB<br>
+        </a><a
+          href="https://resources.mongodb.com/microservices?jmp=nav">MongoDB
+
+
+
+
+
+
+
+
+
+
+
+          Documentation Home Page<br>
+          Microservices resources at MongoDB</a><a
+          href="https://hub.docker.com/_/mysql/"><br>
+        </a></font></p>
+    <span style="font-family: Times New Roman,Times,serif;"></span>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1"><span
+          style="font-weight: bold;">General Docker Tutorial Links</span><a
+          href="https://www.youtube.com/watch?v=YFl2mCHdv24"><br>
+        </a></font></p>
+    <small><a
+href="https://keraton.gitbooks.io/docker-cheat-sheet/content/dockercommand_essentials_md.html">Docker
+Cheat
+
+
+
+
+
+
+
+
+
+
+
+        Sheet</a></small><br>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">
+      </font><br>
+      <font size="-1"><font size="+1"><b>Submission</b></font>:<br>
+        <br>
+        For Labs:<br>
+        <br>
+        Each student should submit their Lab_N files and any supporting
+        materials to the repo. Use the folder named "lab_4" in
+        your&nbsp; repository (create it if necessary).&nbsp; Please
+        include a README text file that contains any instructions or
+        additional details for the TAs to assist with grading.<br>
+        <br>
+        Setup:<br>
+      </font></p>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">We
+
+
+
+        will be using the MPCS GitLab server for version control. The
+        department has published a tool to replace GitHub's Classroom.
+        You will login with your CNET ID at
+        https://course-repos.cs.uchicago.edu/. Here you will find
+        classes you're registered for that have repositories for that
+        class. You will click on the MPCS 51205 — Topics in Software
+        Engineering course for which the repository has been created for
+        then that should take you to the repository that's been created.
+        You can click on your CNETID (as that should have a hyperlink)
+        to take you to the GitLab repository page. That page will
+        contain the instructions needed to clone your repository. You
+        will then perform standard git add, git commit, git push for all
+        homework assignments. This will mean you will perform mkdir
+        commands to create lab repos, which you will push up to your
+        source main branch.<br>
+        <br>
+        Please reach out if you have any questions or issues.<br>
+        <br>
+      </font></p>
+  </body>
+</html>
