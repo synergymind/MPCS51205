@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta content="text/html; charset=windows-1252"
+      http-equiv="content-type">
+    <title>Iteration-2</title>
+  </head>
+  <body>
+    <font style="font-family: Times New Roman,Times,serif;" size="+2">Iteration
+
+
+
+
+
+
+
+
+
+
+      2 Details for MPCS 51205<br>
+    </font>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">Each
+iteration
+
+
+
+
+
+
+
+
+
+
+
+
+        will deliver an incremental accretion of work toward the final
+        project deliverable.&nbsp; Some assignments will require you to
+        work individually and each team member will submit his or her
+        deliverable, and other assignments will require you to work as a
+        team and submit a single team deliverable.&nbsp; Generally (see
+        specifics within each Iteration), each student will be
+        responsible for delivering some piece of the work
+        (documentation, code, etc.).&nbsp; Y</font><small>ou will be
+        evaluated on the <span style="font-style: italic;">clarity and
+          depth</span> of your analysis of these and other
+        deliverables.&nbsp; "Deep Thinking" as well as "Shallow
+        Thinking" are generally obvious.&nbsp; Deep Thinking requires
+        time and....<span style="font-style: italic;">thought</span>.<br>
+      </small></p>
+    <font size="-1"><font size="-1">Unless use of a tool is specified,
+        you may take pictures of whiteboards, papers, napkins, etc. as
+        submission artifacts.&nbsp; <i>From a remote </i><i><i>collaborative</i></i><i>
+          design perspective, previous teams have happily leveraged free
+          tools including <a moz-do-not-send="true"
+            href="http://www.excalidraw.com">excalidraw.com</a>, which
+          allows for collaborative brainstorming</i> <i>among remote
+          team members</i>.<small>&nbsp; </small>However, some artifact
+        deliverables will need to be in the form of formal models.&nbsp;
+        When a formal artifact is required, it will be so specified.</font>
+    </font>
+    <p style="font-family: Times New Roman,Times,serif;"><font size="-1">See
+the
+
+
+
+
+
+
+
+
+
+
+
+        syllabus for information on grading.&nbsp; Turning in Iteration
+        assignments is required.&nbsp; Submit your assignments as a
+        tarball to the repository according to the directions on each
+        Iteration page.</font> </p>
+    <p style="font-family: Times New Roman,Times,serif;"><b><u>Iteration
+          2</u></b> &nbsp; <font color="#ff0000">Due: 5:00 pm, Tuesday,
+        November 10, 2026<br>
+      </font></p>
+    <span style="text-decoration: underline;">High Level Microservices
+      Architecture and Initial Domain Model</span><u>:</u>&nbsp; <font
+      size="-1"><br>
+    </font> <small><br>
+      You are to work together as a team on these deliverables <span
+        style="font-style: italic;">except</span> when you are
+      instructed to <span style="font-style: italic;">individually</span>
+      deliver something.<br>
+      Considering the functional and technical requirements of the
+      system (to be named by the class as a whole), envision the high
+      level Microservices architecture and domain models.&nbsp; <br>
+      <br>
+      <span style="font-weight: bold;">Deliverable One:</span>&nbsp;
+      Microservices Architecture Blueprint<br>
+      <br>
+      Leveraging your Context Map and Domain Vision Statement and your
+      first pass at a high-level architecture, produce a draft of a
+      Microservices Architecture Blueprint.&nbsp; This is a draft-level
+      model of the Microservices that you envision (at this point in
+      your thinking) developing in the final system.&nbsp; This can and
+      should be quite high-level, and should look something like this
+      example taken from a hypothetical airline's Microservice
+      architecture:<br>
+      <br>
+      <img style="width: 760px; height: 366px;" alt="snippet"
+        src="High.Level.Microservices.Architecture.Snippet.jpg"><br>
+      <br>
+      As a team, continue your development of your high level
+      Microservices architecture model of your proposed solution.&nbsp;
+      This model will be a continuation of the "rough sketch" of your
+      "current architectural approach", becoming much refined (and
+      implementable) during this iteration.&nbsp; Your depiction should
+      become formal at this point.&nbsp; Your architecture rendition
+      should continue to include more key architectural components
+      and&nbsp; interactions as your architecture takes on more
+      form.&nbsp;It should also become more "realizable".&nbsp; You
+      should include technologies that you envision will come into play
+      within the different Microservices (the technology stacks).&nbsp;
+      This will depend largely on your teams choice of core language
+      (e.g., python, Java, etc.)&nbsp; <br>
+      <br>
+      Notice that each Microservice will have its own data store, in
+      addition to its own technology stack.&nbsp; Technologies may
+      certainly (and often will) repeat across multiple
+      Microservices.&nbsp; That said, there is <span style="font-style:
+        italic;">nothing</span> wrong with using several common
+      frameworks and tools within the Microservices, including core
+      languages.&nbsp; For example, if one person on your team wants to
+      tackle (just using the above example unrelated to our project) the
+      "Reservation" Microservice in Java, another person on your team
+      could (theoretically) tackle the "Boarding" Microservice with a
+      python stack.&nbsp; Your goal is neither to produce a polyglot
+      Tower of Babel nor a singular technology stack standardized across
+      all Microservices, but rather, and <i>this is the goal</i>, to <span
+        style="font-style: italic;">choose the best set of technologies
+        for the each Microservice</span>, as a bounded context
+      implementing a core business capability.&nbsp; As a simple
+      example, some data store requirements might best be suited to a
+      NoSQL database such as Cassandra or MongoDB, and other
+      requirements might best be suited to a relational database, such
+      as Oracle or MySQL.&nbsp; The ability to choose the right
+      technologies for each Microservice is one of the key "selling
+      points" of such an architecture.<br>
+      <br>
+      <span style="font-weight: bold;">Deliverable Two:</span>&nbsp;
+      Define Your Messages &amp; Services Model<br>
+      <br>
+      Based on the functional requirements of the system, use whatever
+      tool you prefer to create a first pass of the following artifacts
+      from Lecture 2:<br>
+      <br>
+      Microservice Architecture Catalog (cf. MP Table 2.2 p. 62)<br>
+      Service Operation Analysis (you can leave Actor and Use Case/User
+      Story blank for this first draft)<br>
+      Service Operation Decomposition (you can focus on Responsibilities
+      and Parameters and Return Value for this first draft)<br>
+      Technology Stack Decomposition (fill in what you can for this
+      first draft)<br>
+      Event Model<br>
+      <br>
+      Follow the API-FIRST principle and describe the central messages
+      that will be passed between the various services and services and
+      components in your model.&nbsp; Feel free to modify the five
+      artifacts above to suit your team's needs.&nbsp; They are intended
+      to help you as a team <span style="font-style: italic;">think</span>
+      and <span style="font-style: italic;">communicate</span> about
+      what you are going to build.&nbsp; These will need to be created
+      in some tool, the choice of which is up to your team.&nbsp; You
+      may choose Word, Excel, Visual Paradigm, or any other tool.<br>
+      <br>
+      Specifically, think about what messages will be passed from one
+      service to another asynchronously, say over RabbitMQ (we will get
+      to the technical details of this communication later)?&nbsp; What
+      messages should be passed in a synchronous fashion, perhaps via
+      RPC/RMI/gRPC or a RESTful interface?&nbsp; What patterns might you
+      leverage in your communication (e.g., Request/Reply, which we will
+      talk about in our conversation about asynchronous
+      communication)?&nbsp; Again, we will get to the technical details
+      of these various patterns later.&nbsp; This messaging model does
+      not need to be complete (and certainly not "final"), but it does
+      need to depict your understanding at the moment of the services
+      you have identified along with their responsibilities and
+      relationships and key communication paths.&nbsp; You are to work
+      collaboratively in producing this initial model, whiteboarding
+      various design alternatives, finally documenting the current state
+      of your model in and the above artifacts in your tool of choice.<br>
+      <br>
+      <span style="font-weight: bold;">Deliverable Three:</span>&nbsp;
+      Produce a Draft of One Domain Model<br>
+      <br>
+      Working as a team and based on the functional requirements of the
+      system and your understanding of our discussion of analysis
+      modeling and the Building Blocks of Domain Driven Design (see
+      especially Evans, Domain-Driven Design Part II, pp. 63ff), produce
+      a draft Domain Model for a <i>single</i> Bounded Context drawn
+      from your working Context Map and High Level Architecture as a
+      first Analysis exercise (cf. Evans, 293ff.).&nbsp; You are free to
+      choose whichever <i>one</i> of your Bounded Contexts you feel is
+      especially rich in content.&nbsp; Using any UML-based drawing tool
+      or whiteboard, produce a Domain Model draft depicting the salient
+      Entities, Value Objects, Services, Modules, Aggregates, Factories
+      and Repositories you feel may play a useful role in your eventual
+      solution.&nbsp; The goal of this analysis activity is to
+      articulate a high-level vocabulary of the "things" you feel will
+      drive your eventual design of your auction site, focusing again on
+      a single bounded context. <br>
+      <br>
+      The intent here is not to design a particular microservice in
+      terms of <i>how</i> it is going to be implemented, but rather to
+      focus on the requirements and <i>WHAT</i> the Bounded Context of
+      the microservice is responsible for.<br>
+      <br>
+      <b>Deliverable Four</b>:&nbsp; Begin Documenting your Architecture
+      Decisions<br>
+      <br>
+      Referring to Michael Nygard's documentation of ADR usage <a
+        moz-do-not-send="true"
+href="https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions">here</a>
+      and <a moz-do-not-send="true" href="https://adr.github.io">https://adr.github.io</a>
+      and </small><small><a moz-do-not-send="true"
+        href="https://adr.github.io/madr/">https://adr.github.io/madr/</a>,
+      begin documenting your key architectural decisions.&nbsp; You
+      should store your ADRs in your github repository.&nbsp; You may
+      find Richards &amp; Ford, <i>Fundamenntals of Software
+        Architecture</i>, chapters 4, 7, 8, 9 and 19 helpful in this
+      exercise.</small><br>
+    <small><br>
+      <b>Resources</b>: <br>
+      <br>
+    </small><font size="-1">You may find the following online resources
+      helpful as you work together to produce these deliverables:<br>
+      <br>
+      <a
+href="http://domainlanguage.com/wp-content/uploads/2016/05/DDD_Reference_2015-03.pdf">Domain-Driven
+
+
+
+
+
+
+
+
+
+
+        Design Reference</a><br>
+      <a
+href="http://www.infoq.com/resource/minibooks/domain-driven-design-quickly/en/pdf/DomainDrivenDesignQuicklyOnline.pdf">Domain-Driven
+
+
+
+
+
+
+
+
+
+
+        Design Quickly</a><br>
+      <a href="https://github.com/heynickc/awesome-ddd">GitHub
+        References Points on Domain-Driven Design</a><br>
+      <a href="http://guide.agilealliance.org/guide/crc.html">http://guide.agilealliance.org/guide/crc.html</a><br>
+      <a href="http://agilemodeling.com/artifacts/crcModel.htm">http://agilemodeling.com/artifacts/crcModel.htm</a><br>
+      <a href="http://css.dzone.com/articles/crc-cards-primer">http://css.dzone.com/articles/crc-cards-primer</a><br>
+      <br>
+      You should also begin to contemplate your user HTML and REST-based
+      interface.&nbsp; You may find the following sites helpful:<br>
+      <br>
+      <a href="http://getbootstrap.com/">http://getbootstrap.com/</a><br>
+      <a href="http://learn.shayhowe.com/html-css/">http://learn.shayhowe.com/html-css/</a><br>
+      <a href="http://www.codecademy.com/">http://www.codecademy.com/</a><br>
+      You can find a quick index to UML diagrams <a
+        href="http://agilemodeling.com/essays/umlDiagrams.htm">here</a>.
+    </font><br>
+    <small> <br>
+    </small><br>
+    <small><b>Submission</b>:<br>
+      <br>
+      For Iterations:<br>
+      <br>
+      Have your designated Team Lead upload your team's IterationN files
+      and any supporting materials to the repo. Please include a README
+      text file that contains any instructions or additional details for
+      the TAs to assist with grading.<br>
+      <br>
+      Setup:<br>
+      <br>
+      When you open the invitation URL in a browser tab, you will have
+      to complete the following steps:<br>
+      <br>
+      Github may ask you to grant permission for GitHub Classroom to
+      have access to your GitHub account. If you are asked this
+      question, you should say yes and grant access to Github Classroom.<br>
+      <br>
+      You must click “Accept this assignment” or your repository will
+      not actually be created. Do not skip this step!<br>
+      <br>
+      If you run into any issues, please ask for help.<br>
+      <br>
+      <br>
+      <br>
+      <br>
+    </small><font size="-1"> </font>
+  </body>
+</html>
